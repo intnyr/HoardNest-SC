@@ -1,0 +1,188 @@
+https://www.youtube.com/watch?v=ZF73dpgRrWI
+
+11:00 React Project Setup
+	- Install React Router DOM and Toastify
+		- https://youtu.be/ZF73dpgRrWI?t=793
+	- React Snippets
+		- https://youtu.be/ZF73dpgRrWI?t=884
+	- Assets.js
+		- https://youtu.be/ZF73dpgRrWI?t=997
+	- Tailwind
+		- https://youtu.be/ZF73dpgRrWI?t=1115
+	- Page Structure
+		- https://youtu.be/ZF73dpgRrWI?t=1261
+	- Context Folder
+		- https://youtu.be/ZF73dpgRrWI?t=1304
+	- main.jsx is same with my index.tsx
+		- https://youtu.be/ZF73dpgRrWI?t=1485
+    - App.jsx
+    	- https://youtu.be/ZF73dpgRrWI?t=1566
+    - Navbar
+    	- https://youtu.be/ZF73dpgRrWI?t=1956
+    - Header section
+    	- https://youtu.be/ZF73dpgRrWI?t=3378
+    - Fonts
+    	- https://youtu.be/ZF73dpgRrWI?t=3756
+    - Create Context
+    	- https://youtu.be/ZF73dpgRrWI?t=3945
+    - Latest Collection
+    	- https://youtu.be/ZF73dpgRrWI?t=4172
+
+
+
+//Footer
+import React from "react";
+import { Box, Container, IconButton, Link, Typography } from "@mui/material";
+import FacebookIcon from "@mui/icons-material/Facebook";
+import InstagramIcon from "@mui/icons-material/Instagram";
+import PinterestIcon from "@mui/icons-material/Pinterest";
+
+const Footer = () => {
+  return (
+    <Container
+      maxWidth="lg"
+      component="footer"
+      sx={{ py: 3, textAlign: "center" }}
+    >
+      {/* Social Media Links */}
+      <Box display="flex" justifyContent="center" gap={2} mb={2}>
+        <IconButton
+          component={Link}
+          href="https://www.facebook.com/HoardNest/"
+          target="_blank"
+          aria-label="Facebook"
+        >
+          <FacebookIcon />
+        </IconButton>
+        <IconButton
+          component={Link}
+          href="https://www.instagram.com/HoardNest/"
+          target="_blank"
+          aria-label="Instagram"
+        >
+          <InstagramIcon />
+        </IconButton>
+        <IconButton
+          component={Link}
+          href="https://www.pinterest.com/HoardNest/"
+          target="_blank"
+          aria-label="Pinterest"
+        >
+          <PinterestIcon />
+        </IconButton>
+      </Box>
+
+      {/* Legal Links */}
+      <Box display="flex" justifyContent="center" gap={2} mb={2}>
+        <Link href="/policy/" underline="hover">
+          Policy
+        </Link>
+        <Link href="/contact/" underline="hover">
+          Contact
+        </Link>
+        <Link href="/about/" underline="hover">
+          About Us
+        </Link>
+      </Box>
+
+      {/* Copyright Info */}
+      <Typography variant="body2" color="textSecondary">
+        Copyright © 2025 - 2026 HoarNest
+      </Typography>
+      <Typography variant="body2" color="textSecondary">
+        Prices include VAT and, if applicable, additional shipping costs.
+      </Typography>
+    </Container>
+  );
+};
+
+export default Footer;
+
+
+//Footer using AppBar
+
+import React from "react";
+import {
+  AppBar,
+  Toolbar,
+  Box,
+  Typography,
+  IconButton,
+  Link,
+  Container,
+} from "@mui/material";
+import FacebookIcon from "@mui/icons-material/Facebook";
+import InstagramIcon from "@mui/icons-material/Instagram";
+import PinterestIcon from "@mui/icons-material/Pinterest";
+
+const Footer = () => {
+  return (
+    <AppBar
+      position="fixed"
+      sx={{
+        top: "auto",
+        bottom: 0,
+        backgroundColor: "white",
+        color: "black",
+        py: 0, // Maximizing height
+      }}
+    >
+      <Container maxWidth="lg">
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+          {/* Social Media Links (Far Left) */}
+          <Box display="flex" gap={2}>
+            <IconButton
+              component={Link}
+              href="https://www.facebook.com/HoardNest/"
+              target="_blank"
+              aria-label="Facebook"
+            >
+              <FacebookIcon />
+            </IconButton>
+            <IconButton
+              component={Link}
+              href="https://www.instagram.com/HoardNest/"
+              target="_blank"
+              aria-label="Instagram"
+            >
+              <InstagramIcon />
+            </IconButton>
+            <IconButton
+              component={Link}
+              href="https://www.pinterest.com/HoardNest/"
+              target="_blank"
+              aria-label="Pinterest"
+            >
+              <PinterestIcon />
+            </IconButton>
+          </Box>
+
+          {/* Copyright Info (Centered) */}
+          <Box textAlign="center">
+            <Typography variant="body2">
+              Copyright © 2025 - 2026 HoarNest
+            </Typography>
+            <Typography variant="body2">
+              Prices include VAT and, if applicable, additional shipping costs.
+            </Typography>
+          </Box>
+
+          {/* Legal Links (Far Right) */}
+          <Box display="flex" gap={2}>
+            <Link href="/policy/" underline="hover">
+              Policy
+            </Link>
+            <Link href="/contact/" underline="hover">
+              Contact
+            </Link>
+            <Link href="/about/" underline="hover">
+              About Us
+            </Link>
+          </Box>
+        </Toolbar>
+      </Container>
+    </AppBar>
+  );
+};
+
+export default Footer;
