@@ -5,6 +5,7 @@ https://www.youtube.com/watch?v=ZF73dpgRrWI
 		- https://youtu.be/ZF73dpgRrWI?t=793
 	- React Snippets
 		- https://youtu.be/ZF73dpgRrWI?t=884
+    - ES7 React/Redux/GraphQL/React-Native Snippets (rafce)
 	- Assets.js
 		- https://youtu.be/ZF73dpgRrWI?t=997
 	- Tailwind
@@ -25,8 +26,12 @@ https://www.youtube.com/watch?v=ZF73dpgRrWI
     	- https://youtu.be/ZF73dpgRrWI?t=3756
     - Create Context
     	- https://youtu.be/ZF73dpgRrWI?t=3945
-    - Latest Collection
+    - Latest Collection (Display latest added products using context API)
     	- https://youtu.be/ZF73dpgRrWI?t=4172
+    - Creating a title component and using it in the project
+      - https://youtu.be/ZF73dpgRrWI?t=4478
+    - Setting latest products using React state and useEffect hook
+      - https://youtu.be/ZF73dpgRrWI?t=4642
 
 
 

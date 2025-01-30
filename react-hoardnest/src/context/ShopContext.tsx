@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode } from "react";
+import React, { createContext, useState, ReactNode } from "react";
 import productImage1 from "../media/product-01.png";
 import productImage2 from "../media/product-02.png";
 import productImage3 from "../media/product-03.png";
@@ -18,122 +18,134 @@ import productImage15 from "../media/product-15.png";
 interface Product {
   id: number;
   name: string;
-  price: string;
+  price: number;
   image: string;
   newlisting: boolean;
 }
 
+interface CartItem {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+  quantity: number;
+}
+
 interface ShopContextProps {
   products: Product[];
+  cart: CartItem[];
   currency: string;
   deliveryFee: number;
+  addToCart: (product: Product) => void;
+  removeFromCart: (id: number) => void;
+  clearCart: () => void;
 }
 
 export const ShopContext = createContext<ShopContextProps | null>(null);
 
-const products: Product[] = [
+const initialProducts: Product[] = [
   {
     id: 1,
-    name: "Sports-casual men’s moccasins...",
-    price: "Php 150.00",
+    name: "Sports-casual moccasins",
+    price: 150,
     image: productImage1,
     newlisting: true,
   },
   {
     id: 2,
-    name: "Women’s stylish jacket...",
-    price: "Php 250.00",
+    name: "Stylish women's jacket",
+    price: 250,
     image: productImage2,
     newlisting: true,
   },
   {
     id: 3,
-    name: "Children’s blouse for girls...",
-    price: "Php 150.00",
+    name: "Children’s blouse",
+    price: 150,
     image: productImage3,
     newlisting: true,
   },
   {
     id: 4,
-    name: "Modern women’s sneakers...",
-    price: "Php 175.00",
+    name: "Modern sneakers",
+    price: 175,
     image: productImage4,
     newlisting: true,
   },
   {
     id: 5,
-    name: "Men’s stylish small shoulder bag...",
-    price: "Php 100.00",
+    name: "Small shoulder bag",
+    price: 100,
     image: productImage5,
     newlisting: true,
   },
   {
     id: 6,
-    name: "Men’s black wallet...",
-    price: "Php 115.00",
+    name: "Men’s wallet",
+    price: 115,
     image: productImage6,
     newlisting: true,
   },
   {
     id: 7,
-    name: "Casual men’s sneakers...",
-    price: "Php 250.00",
+    name: "Casual sneakers",
+    price: 250,
     image: productImage7,
     newlisting: true,
   },
   {
     id: 8,
-    name: "Women’s slippers...",
-    price: "Php 125.00",
+    name: "Women’s slippers",
+    price: 125,
     image: productImage8,
     newlisting: true,
   },
   {
     id: 9,
-    name: "Modern men’s camouflage sweater...",
-    price: "Php 350.00",
+    name: "Camouflage sweater",
+    price: 350,
     image: productImage9,
     newlisting: true,
   },
   {
     id: 10,
-    name: "Men’s colored beach shorts...",
-    price: "Php 150.00",
+    name: "Beach shorts",
+    price: 150,
     image: productImage10,
     newlisting: true,
   },
   {
     id: 11,
-    name: "Two-piece swimsuit...",
-    price: "Php 200.00",
+    name: "Swimsuit",
+    price: 200,
     image: productImage11,
     newlisting: true,
   },
   {
     id: 12,
-    name: "Summer women’s dress...",
-    price: "Php 500.00",
+    name: "Summer dress",
+    price: 500,
     image: productImage12,
     newlisting: true,
   },
   {
     id: 13,
-    name: "Modern women’s long denim skirt...",
-    price: "Php 225.00",
+    name: "Denim skirt",
+    price: 225,
     image: productImage13,
     newlisting: true,
   },
   {
     id: 14,
-    name: "Modern men’s tank top...",
-    price: "Php 120.00",
+    name: "Men’s tank top",
+    price: 120,
     image: productImage14,
     newlisting: true,
   },
   {
     id: 15,
-    name: "Children’s sports set...",
-    price: "Php 190.00",
+    name: "Children’s sports set",
+    price: 190,
     image: productImage15,
     newlisting: true,
   },
@@ -146,11 +158,47 @@ interface ShopContextProviderProps {
 const ShopContextProvider: React.FC<ShopContextProviderProps> = ({
   children,
 }) => {
+  const [cart, setCart] = useState<CartItem[]>([]);
   const currency = "Php";
   const deliveryFee = 25;
 
+  // Add product to cart
+  const addToCart = (product: Product) => {
+    setCart((prevCart) => {
+      const existingItem = prevCart.find((item) => item.id === product.id);
+      if (existingItem) {
+        return prevCart.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+      return [...prevCart, { ...product, quantity: 1 }];
+    });
+  };
+
+  // Remove product from cart
+  const removeFromCart = (id: number) => {
+    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+  };
+
+  // Clear the cart
+  const clearCart = () => {
+    setCart([]);
+  };
+
   return (
-    <ShopContext.Provider value={{ products, currency, deliveryFee }}>
+    <ShopContext.Provider
+      value={{
+        products: initialProducts,
+        cart,
+        currency,
+        deliveryFee,
+        addToCart,
+        removeFromCart,
+        clearCart,
+      }}
+    >
       {children}
     </ShopContext.Provider>
   );
