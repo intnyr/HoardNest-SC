@@ -23,7 +23,7 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import WishlistDrawer from "./WishlistDrawer";
 import productImage1 from "../media/product-01.png";
 
-const hoarnestTheme = createTheme({
+const hoardnestTheme = createTheme({
   palette: {
     mode: "light",
     primary: {
@@ -85,7 +85,7 @@ const Navbar: React.FC = () => {
   ];
 
   return (
-    <ThemeProvider theme={hoarnestTheme}>
+    <ThemeProvider theme={hoardnestTheme}>
       <AppBar position="sticky">
         <Toolbar>
           {/* Menu Icon */}

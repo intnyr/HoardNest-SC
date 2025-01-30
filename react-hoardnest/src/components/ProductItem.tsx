@@ -25,7 +25,7 @@ const ProductItem: React.FC<ProductItemProps> = ({
   const { currency } = shopContext;
 
   return (
-    <Link to={`/category/${id}`} style={{ textDecoration: "none" }}>
+    <Link to={`/categories/${id}`} style={{ textDecoration: "none" }}>
       <Box
         sx={{
           border: "1px solid #ddd",
