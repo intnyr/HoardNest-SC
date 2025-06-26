@@ -3,12 +3,22 @@ body {
   margin: 0;
 }
 .App {
-  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.App > main {
+  flex: 1 0 auto;
 }
 
 .App-logo {
   height: 40vmin;
   pointer-events: none;
+}
+
+footer {
+  flex-shrink: 0;
 }
 
 @media (prefers-reduced-motion: no-preference) {

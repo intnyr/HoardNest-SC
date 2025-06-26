@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { onAuthStateChanged, signOut, User } from "firebase/auth";
+import { auth } from "../firebaseConfig";
 import {
   AppBar,
   Toolbar,
@@ -22,6 +24,7 @@ import TextLogo from "../text-logo.svg";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import WishlistDrawer from "./WishlistDrawer";
 import productImage1 from "../media/product-01.png";
+import { useNavigate } from "react-router-dom";
 
 const hoardnestTheme = createTheme({
   palette: {
@@ -40,11 +43,28 @@ const Navbar: React.FC = () => {
     setDrawerOpen(open);
   };
 
-  const generalLinks: { text: string; href?: string }[] = [
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+    });
+    return () => unsubscribe();
+  }, []);  
+
+  const navigate = useNavigate();
+  const handleLogout = async () => {
+    await signOut(auth);
+    navigate("/login");
+  };
+
+  const generalLinks: { text: string; href?: string; onClick?: () => void }[] = [
     { text: "New Listing", href: "/" },
     { text: "About Us", href: "/about" },
     { text: "Contact", href: "/contact" },
-    { text: "Login", href: "/login" },
+    user
+      ? { text: "Logout", onClick: handleLogout }
+      : { text: "Login", href: "/login" },
   ];
 
   const categories: string[] = [
@@ -131,21 +151,29 @@ const Navbar: React.FC = () => {
 
             <Divider />
 
-            <List subheader={<ListSubheader>Menu</ListSubheader>}>
-              {generalLinks.map((link, index) => (
-                <ListItem
-                  key={index}
-                  component="a"
-                  href={link.href}
-                  sx={{
-                    color: "#4e542e",
-                  }}
-                  onClick={toggleDrawer(false)}
-                >
-                  <ListItemText primary={link.text} />
-                </ListItem>
-              ))}
-            </List>
+          <List subheader={<ListSubheader>Menu</ListSubheader>}>
+            {generalLinks.map((link, index) => (
+              <ListItem
+                key={index}
+                component={link.href ? "a" : "button"}
+                href={link.href}
+                sx={{
+                  color: "#4e542e",
+                  ...(link.onClick && { cursor: "pointer" }),
+                }}
+                onClick={
+                  link.onClick
+                    ? () => {
+                        link.onClick && link.onClick();
+                        setDrawerOpen(false);
+                      }
+                    : toggleDrawer(false)
+                }
+              >
+                <ListItemText primary={link.text} />
+              </ListItem>
+            ))}
+          </List>
 
             <Divider />
 
@@ -167,7 +195,7 @@ const Navbar: React.FC = () => {
           </Drawer>
 
           {/* Logo Link */}
-          <Box sx={{ flexGrow: 1 }}>
+          <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
             <Link to="/">
               <img src={LogoIcon} alt="Hoarnest Logo" height="50" width="120" />
             </Link>
