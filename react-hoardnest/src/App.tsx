@@ -9,6 +9,7 @@ import ContactPage from "./pages/ContactPage";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import DashboardPage from "./pages/DashboardPage";
 
 const hoardnestTheme = createTheme({
   palette: {
@@ -31,6 +32,7 @@ const App: React.FC = () => {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<SignupPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
         </Routes>
       </main>
       <Footer />
