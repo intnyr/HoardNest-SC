@@ -10,6 +10,8 @@ import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import DashboardPage from "./pages/DashboardPage";
+import PrivateRoute from "./components/PrivateRoute";
+import { useLocation } from "react-router-dom";
 
 const hoardnestTheme = createTheme({
   palette: {
@@ -21,23 +23,31 @@ const hoardnestTheme = createTheme({
 });
 
 const App: React.FC = () => {
+  const location = useLocation();
   return (
-  <ThemeProvider theme={hoardnestTheme}>
-    <div className="App">
-      <Navbar />
-      <main>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<SignupPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-        </Routes>
-      </main>
-      <Footer />
-    </div>
-  </ThemeProvider>        
+    <ThemeProvider theme={hoardnestTheme}>
+      <div className="App">
+        {!location.pathname.startsWith("/dashboard") && <Navbar />}
+        <main>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<SignupPage />} />
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute>
+                  <DashboardPage />
+                </PrivateRoute>
+              }
+            />
+          </Routes>
+        </main>
+        {!location.pathname.startsWith("/dashboard") && <Footer />}
+      </div>
+    </ThemeProvider>
   );
 };
 

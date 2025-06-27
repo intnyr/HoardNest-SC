@@ -56,9 +56,9 @@ const Footer = () => {
       <Typography variant="body2" color="textSecondary">
         Copyright © 2025 - 2026 HoarNest
       </Typography>
-      <Typography variant="body2" color="textSecondary">
+      {/* <Typography variant="body2" color="textSecondary">
         Prices include VAT and, if applicable, additional shipping costs.
-      </Typography>
+      </Typography> */}
     </Container>
   );
 };

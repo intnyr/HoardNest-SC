@@ -20,7 +20,7 @@ const SignupPage: React.FC = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const navigate = useNavigate();  
+  const navigate = useNavigate();
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,7 +124,7 @@ const SignupPage: React.FC = () => {
                 </Button>
               </Box>
             </Box>
-          )}          
+          )}
           <Box mt={3} textAlign="center">
             <Button
               variant="contained"

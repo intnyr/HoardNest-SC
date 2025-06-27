@@ -50,7 +50,7 @@ const Navbar: React.FC = () => {
       setUser(firebaseUser);
     });
     return () => unsubscribe();
-  }, []);  
+  }, []);
 
   const navigate = useNavigate();
   const handleLogout = async () => {
@@ -59,12 +59,13 @@ const Navbar: React.FC = () => {
   };
 
   const generalLinks: { text: string; href?: string; onClick?: () => void }[] = [
-    { text: "New Listing", href: "/" },
-    { text: "About Us", href: "/about" },
-    { text: "Contact", href: "/contact" },
+    ...(user ? [{ text: "Dashboard", href: "/dashboard" }] : []),
     user
       ? { text: "Logout", onClick: handleLogout }
       : { text: "Login", href: "/login" },
+    { text: "New Listing", href: "/" },
+    { text: "About Us", href: "/about" },
+    { text: "Contact", href: "/contact" },
   ];
 
   const categories: string[] = [
@@ -151,29 +152,29 @@ const Navbar: React.FC = () => {
 
             <Divider />
 
-          <List subheader={<ListSubheader>Menu</ListSubheader>}>
-            {generalLinks.map((link, index) => (
-              <ListItem
-                key={index}
-                component={link.href ? "a" : "button"}
-                href={link.href}
-                sx={{
-                  color: "#4e542e",
-                  ...(link.onClick && { cursor: "pointer" }),
-                }}
-                onClick={
-                  link.onClick
-                    ? () => {
+            <List subheader={<ListSubheader>Menu</ListSubheader>}>
+              {generalLinks.map((link, index) => (
+                <ListItem
+                  key={index}
+                  component={link.href ? "a" : "button"}
+                  href={link.href}
+                  sx={{
+                    color: "#4e542e",
+                    ...(link.onClick && { cursor: "pointer" }),
+                  }}
+                  onClick={
+                    link.onClick
+                      ? () => {
                         link.onClick && link.onClick();
                         setDrawerOpen(false);
                       }
-                    : toggleDrawer(false)
-                }
-              >
-                <ListItemText primary={link.text} />
-              </ListItem>
-            ))}
-          </List>
+                      : toggleDrawer(false)
+                  }
+                >
+                  <ListItemText primary={link.text} />
+                </ListItem>
+              ))}
+            </List>
 
             <Divider />
 
@@ -202,21 +203,25 @@ const Navbar: React.FC = () => {
           </Box>
 
           {/* Wishlist Icon */}
-          <IconButton
-            color="inherit"
-            aria-label="open wishlist"
-            sx={{
-              color: "#9f4a23",
-            }}
-            onClick={() => setWishlistOpen(true)}
-          >
-            <FavoriteIcon />
-          </IconButton>
-          <WishlistDrawer
-            open={isWishlistOpen}
-            onClose={() => setWishlistOpen(false)}
-            wishlistItems={wishlistItems}
-          />
+          {user && (
+            <IconButton
+              color="inherit"
+              aria-label="open wishlist"
+              sx={{
+                color: "#9f4a23",
+              }}
+              onClick={() => setWishlistOpen(true)}
+            >
+              <FavoriteIcon />
+            </IconButton>
+          )}
+          {user && (
+            <WishlistDrawer
+              open={isWishlistOpen}
+              onClose={() => setWishlistOpen(false)}
+              wishlistItems={wishlistItems}
+            />
+          )}
         </Toolbar>
       </AppBar>
     </ThemeProvider>

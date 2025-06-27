@@ -24,7 +24,7 @@ const LoginPage: React.FC = () => {
     setError("");
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigate("/"); // Redirect to homepage
+      navigate("/dashboard");
     } catch (err: any) {
       if (
         err.code === "auth/invalid-credential" ||
