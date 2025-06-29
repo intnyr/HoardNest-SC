@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react'
 import Divider from '@mui/material/Divider';
 import Drawer, { DrawerProps } from '@mui/material/Drawer';
 import List from '@mui/material/List';
@@ -18,6 +18,8 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { Link } from "react-router-dom"
 import TextLogo from "../text-logo-grey.svg";
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import UploadSellModal from "../components/UploadSellModal";
 
 const categories = [
   {
@@ -29,10 +31,10 @@ const categories = [
         active: true,
       },
       { id: 'Earnings', icon: <PaidIcon /> },
-      // {
-      //   id: 'Machine learning',
-      //   icon: <SettingsInputComponentIcon />,
-      // },
+      {
+        id: 'Upload & Sell',
+        icon: <CloudUploadIcon />,
+      },
     ],
   },
   {
@@ -65,48 +67,60 @@ const itemCategory = {
 
 export default function Navigator(props: DrawerProps) {
   const { ...other } = props;
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
 
   return (
-    <Drawer variant="permanent" {...other}>
-      <List disablePadding>
-        {/* Logo */}
-        <Box display="flex" justifyContent="center" alignItems="center">
-          <Link to="/">
-            <img
-              src={TextLogo}
-              alt="Hoarnest Logo"
-              height="50"
-              width="120"
-            />
-          </Link>
-        </Box>
-        <ListItem
-          component={Link}
-          to="/"
-          sx={{ ...item, ...itemCategory }}
-        >
-          <ListItemIcon>
-            <HomeIcon />
-          </ListItemIcon>
-          <ListItemText>Homepage</ListItemText>
-        </ListItem>
-        {categories.map(({ id, children }) => (
-          <Box key={id} sx={{ bgcolor: '#5E3708' }}>
-            <ListItem sx={{ py: 2, px: 3 }}>
-              <ListItemText sx={{ color: '#fff' }}>{id}</ListItemText>
-            </ListItem>
-            {children.map(({ id: childId, icon, active }) => (
-              <ListItem disablePadding key={childId}>
-                <ListItemButton selected={active} sx={item}>
-                  <ListItemIcon>{icon}</ListItemIcon>
-                  <ListItemText>{childId}</ListItemText>
-                </ListItemButton>
-              </ListItem>
-            ))}
-            <Divider sx={{ mt: 2 }} />
+    <>
+      <Drawer variant="permanent" {...other}>
+        <List disablePadding>
+          {/* Logo */}
+          <Box display="flex" justifyContent="center" alignItems="center">
+            <Link to="/">
+              <img
+                src={TextLogo}
+                alt="Hoarnest Logo"
+                height="50"
+                width="120"
+              />
+            </Link>
           </Box>
-        ))}
-      </List>
-    </Drawer>
+          <ListItem component={Link} to="/" sx={{ ...item, ...itemCategory }}>
+            <ListItemIcon>
+              <HomeIcon />
+            </ListItemIcon>
+            <ListItemText primary="Homepage" />
+          </ListItem>
+          {categories.map(({ id, children }) => (
+            <Box key={id} sx={{ bgcolor: '#5E3708' }}>
+              <ListItem sx={{ py: 2, px: 3 }}>
+                <ListItemText primary={id} sx={{ color: '#fff' }} />
+              </ListItem>
+              {children.map(({ id: childId, icon, active }) => (
+                <ListItem disablePadding key={childId}>
+                  <ListItemButton
+                    selected={active}
+                    sx={item}
+                    onClick={
+                      childId === "Upload & Sell"
+                        ? () => setUploadModalOpen(true)
+                        : undefined
+                    }
+                  >
+                    <ListItemIcon>{icon}</ListItemIcon>
+                    <ListItemText primary={childId} />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+              <Divider sx={{ mt: 2 }} />
+            </Box>
+          ))}
+        </List>
+      </Drawer>
+      <UploadSellModal
+        open={uploadModalOpen}
+        onClose={() => setUploadModalOpen(false)}
+      />
+    </>
   );
+
 }
