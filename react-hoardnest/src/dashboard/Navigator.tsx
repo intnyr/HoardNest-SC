@@ -8,15 +8,14 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import HomeIcon from '@mui/icons-material/Home';
-import PeopleIcon from '@mui/icons-material/People';
-import DnsRoundedIcon from '@mui/icons-material/DnsRounded';
-import PermMediaOutlinedIcon from '@mui/icons-material/PhotoSizeSelectActual';
-import PublicIcon from '@mui/icons-material/Public';
-import SettingsEthernetIcon from '@mui/icons-material/SettingsEthernet';
-import SettingsInputComponentIcon from '@mui/icons-material/SettingsInputComponent';
-import TimerIcon from '@mui/icons-material/Timer';
+import StorefrontIcon from '@mui/icons-material/Storefront';
+import PaidIcon from '@mui/icons-material/Paid';
+import LockIcon from '@mui/icons-material/Lock';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import SettingsIcon from '@mui/icons-material/Settings';
-import PhonelinkSetupIcon from '@mui/icons-material/PhonelinkSetup';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { Link } from "react-router-dom"
 import TextLogo from "../text-logo-grey.svg";
 
@@ -25,11 +24,11 @@ const categories = [
     id: 'Manage Store',
     children: [
       {
-        id: 'Hidden Gems',
-        icon: <PeopleIcon />,
+        id: 'Stored Goods',
+        icon: <StorefrontIcon />,
         active: true,
       },
-      { id: 'Earnings', icon: <DnsRoundedIcon /> },
+      { id: 'Earnings', icon: <PaidIcon /> },
       // {
       //   id: 'Machine learning',
       //   icon: <SettingsInputComponentIcon />,
@@ -40,11 +39,11 @@ const categories = [
     id: 'Account',
     children: [
       { id: 'Settings', icon: <SettingsIcon /> },
-      { id: 'Favorites', icon: <TimerIcon /> },
-      { id: 'Order History', icon: <SettingsEthernetIcon /> },
-      { id: 'Password & Security', icon: <PermMediaOutlinedIcon /> },
-      { id: 'Shipping Address', icon: <PublicIcon /> },
-      { id: 'Logout', icon: <PhonelinkSetupIcon /> },
+      { id: 'Favorites', icon: <FavoriteIcon /> },
+      { id: 'Order History', icon: <ReceiptLongIcon /> },
+      { id: 'Password & Security', icon: <LockIcon /> },
+      { id: 'Shipping Address', icon: <LocalShippingIcon /> },
+      { id: 'Logout', icon: <LogoutIcon /> },
     ],
   },
 ];

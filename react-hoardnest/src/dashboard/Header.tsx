@@ -82,7 +82,7 @@ export default function Header(props: HeaderProps) {
           <Grid container spacing={1} sx={{ alignItems: 'center' }}>
             <Grid item xs>
               <Typography color="inherit" variant="h5" component="h1">
-                Hidden Gems
+                Stored Goods
               </Typography>
             </Grid>
             <Grid item>
@@ -107,10 +107,10 @@ export default function Header(props: HeaderProps) {
       </AppBar>
       <AppBar component="div" position="static" elevation={0} sx={{ zIndex: 0 }}>
         <Tabs value={0} textColor="inherit">
-          <Tab label="Uploaded Stuff" />
-          <Tab label="Unlisted Items" />
-          {/* <Tab label="Templates" />
-          <Tab label="Usage" /> */}
+          <Tab label="Product List" />
+          <Tab label="In-Review" />
+          <Tab label="Delivery" />
+          <Tab label="Unlisted" />
         </Tabs>
       </AppBar>
     </React.Fragment>
