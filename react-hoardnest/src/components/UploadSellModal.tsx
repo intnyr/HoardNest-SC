@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -16,11 +16,15 @@ import {
 } from "@mui/material";
 import nothumbnail from "../media/no-thumbnail.svg";
 import { Checkbox, FormControlLabel, Link } from "@mui/material";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { addDoc, collection, Timestamp } from "firebase/firestore";
-import { onAuthStateChanged } from "firebase/auth";
-import { db, auth, storage } from "../firebaseConfig";
+import { db, auth } from "../firebaseConfig";
 import CloseIcon from "@mui/icons-material/Close";
+
+declare global {
+  interface Window {
+    cloudinary: any;
+  }
+}
 
 interface UploadSellModalProps {
   open: boolean;
@@ -55,7 +59,7 @@ const qualities = [
 ];
 
 const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
-  const [file, setFile] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState("");
   const [itemName, setItemName] = useState("");
   const [category, setCategory] = useState("");
   const [quality, setQuality] = useState("");
@@ -63,30 +67,48 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
   const [keywords, setKeywords] = useState("");
   const [price, setPrice] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [quantity, setQuantity] = useState("1");
+  const [agreed, setAgreed] = useState(false);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
+  useEffect(() => {
+    if (!window.cloudinary) {
+      const script = document.createElement("script");
+      script.src = "https://widget.cloudinary.com/v2.0/global/all.js";
+      script.async = true;
+      document.body.appendChild(script);
     }
+  }, []);
+
+  const openCloudinaryWidget = (cb: (url: string) => void) => {
+    // @ts-ignore
+    window.cloudinary.openUploadWidget(
+      {
+        cloudName: "ddkqni3iw", // replace with your Cloudinary cloud name
+        uploadPreset: "hoardnest_unsigned", // set up an unsigned upload preset in Cloudinary settings
+        sources: ["local", "url", "camera"],
+        multiple: false,
+        cropping: false,
+        folder: "hoardnest-items",
+        resourceType: "image",
+        maxFileSize: 1000000,
+      },
+      (error: any, result: any) => {
+        if (!error && result && result.event === "success") {
+          cb(result.info.secure_url);
+        }
+      }
+    );
   };
 
   const handleUpload = async () => {
-    if (!file || !itemName || !category || !quality || !description || !price || !agreed) {
+    if (!imageUrl || !itemName || !category || !quality || !description || !price || !agreed) {
       alert("Please fill in all required fields and agree to the terms.");
       return;
     }
     setUploading(true);
-
     try {
       const user = auth.currentUser;
       if (!user) throw new Error("User not authenticated");
-
-      // Upload file to Firebase Storage
-      const storageRef = ref(storage, `items/${user.uid}/${Date.now()}_${file.name}`);
-      await uploadBytes(storageRef, file);
-      const downloadURL = await getDownloadURL(storageRef);
-
-      // Save item details to Firestore
       await addDoc(collection(db, "items"), {
         userId: user.uid,
         itemName,
@@ -96,12 +118,10 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
         keywords,
         price: parseFloat(price),
         quantity: parseInt(quantity, 10),
-        imageUrl: downloadURL,
+        imageUrl,
         createdAt: Timestamp.now(),
       });
-
-      // Reset form and close modal
-      setFile(null);
+      setImageUrl("");
       setItemName("");
       setCategory("");
       setQuality("");
@@ -118,9 +138,6 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
       setUploading(false);
     }
   };
-
-  const [quantity, setQuantity] = useState("1");
-  const [agreed, setAgreed] = useState(false);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -178,9 +195,9 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
                     justifyContent: 'center',
                   }}
                 >
-                  {file ? (
+                  {imageUrl ? (
                     <img
-                      src={URL.createObjectURL(file)}
+                      src={imageUrl}
                       alt="Thumbnail"
                       style={{
                         position: 'absolute',
@@ -223,18 +240,17 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
               <Grid item xs={4}>
                 <Button
                   variant="contained"
-                  component="label"
                   fullWidth
                   sx={{ py: 1, mb: 2, lineHeight: "normal" }}
+                  onClick={() => openCloudinaryWidget((url) => setImageUrl(url))}
                 >
-                  {file ? "Change File" : "Select File to Upload"}
-                  <input
-                    type="file"
-                    hidden
-                    onChange={handleFileChange}
-                    accept="image/*"
-                  />
+                  {imageUrl ? "Change Image" : "Upload Image"}
                 </Button>
+                {imageUrl && (
+                  <Typography variant="body2" sx={{ mb: 2 }}>
+                    Uploaded!
+                  </Typography>
+                )}
 
                 {/* Quantity */}
                 <TextField
@@ -391,7 +407,7 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
           color="primary"
           variant="contained"
           disabled={
-            !file ||
+            !imageUrl ||
             !itemName ||
             !category ||
             !quality ||

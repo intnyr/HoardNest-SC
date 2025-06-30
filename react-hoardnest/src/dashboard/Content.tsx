@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -11,10 +12,128 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { collection, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
+import EditItemModal from '../components/EditItemModal';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
+
+interface Item {
+  id: string;
+  imageUrl: string;
+  itemName: string;
+  category: string;
+  quality: string;
+  description: string;
+  keywords: string;
+  price: number;
+  quantity: number;
+  createdAt: any;
+}
 
 export default function Content() {
+  const [items, setItems] = useState<Item[]>([]);
+  const [search, setSearch] = useState("");
+  const [filteredItems, setFilteredItems] = useState<Item[]>([]);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editItem, setEditItem] = useState<Item | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteItem, setDeleteItem] = useState<Item | null>(null);
+
+  useEffect(() => {
+    const q = query(collection(db, 'items'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const allItems = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Item));
+      setItems(allItems);
+      setFilteredItems(allItems);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleSearch = () => {
+    if (!search.trim()) {
+      setFilteredItems(items);
+      return;
+    }
+    const lower = search.toLowerCase();
+    setFilteredItems(
+      items.filter(item =>
+        item.itemName.toLowerCase().includes(lower) ||
+        item.category.toLowerCase().includes(lower) ||
+        item.quality.toLowerCase().includes(lower) ||
+        item.description.toLowerCase().includes(lower) ||
+        item.keywords.toLowerCase().includes(lower)
+      )
+    );
+  };
+
+  const handleDelete = (item: Item) => {
+    setDeleteItem(item);
+    setDeleteOpen(true);
+  };
+
+  // Helper to extract public_id from Cloudinary URL
+  function getCloudinaryPublicId(url: string): string | null {
+    const match = url.match(/\/hoardnest-items\/([^\.\/]+)\.[a-zA-Z0-9]+$/);
+    if (match) return `hoardnest-items/${match[1]}`;
+    return null;
+  }
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteItem) return;
+    // Delete image from Cloudinary if exists
+    if (deleteItem.imageUrl) {
+      const publicId = getCloudinaryPublicId(deleteItem.imageUrl);
+      if (publicId) {
+        await fetch('/api/delete-cloudinary', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ publicId }),
+        });
+      }
+    }
+    await deleteDoc(doc(db, 'items', deleteItem.id));
+    setDeleteOpen(false);
+    setDeleteItem(null);
+  };
+
+  const handleEdit = (item: Item) => {
+    setEditItem(item);
+    setEditOpen(true);
+  };
+
+  const handleEditSave = async (updated: Item) => {
+    if (!updated.id) return;
+    const ref = doc(db, 'items', updated.id);
+    await updateDoc(ref, {
+      itemName: updated.itemName,
+      category: updated.category,
+      quality: updated.quality,
+      description: updated.description,
+      keywords: updated.keywords,
+      price: updated.price,
+      quantity: updated.quantity,
+      imageUrl: updated.imageUrl, // reflect image changes
+    });
+    setEditOpen(false);
+    setEditItem(null);
+  };
+
   return (
     <>
+      <EditItemModal
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        item={editItem}
+        onSave={handleEditSave}
+      />
+      <DeleteConfirmModal
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        itemName={deleteItem?.itemName}
+      />
       <Paper sx={{ width: '100%', maxWidth: '1200px', margin: 'auto', overflow: 'hidden' }}>
         <AppBar
           position="static"
@@ -31,6 +150,9 @@ export default function Content() {
                 <TextField
                   fullWidth
                   placeholder="Dig into your vault"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') handleSearch(); }}
                   InputProps={{
                     disableUnderline: true,
                     sx: { fontSize: 'default' },
@@ -39,11 +161,11 @@ export default function Content() {
                 />
               </Grid>
               <Grid item>
-                <Button variant="contained" sx={{ mr: 1 }}>
+                <Button variant="contained" sx={{ mr: 1 }} onClick={handleSearch}>
                   Search Item
                 </Button>
                 <Tooltip title="Reload">
-                  <IconButton>
+                  <IconButton onClick={() => { setSearch(""); setFilteredItems(items); }}>
                     <RefreshIcon color="inherit" sx={{ display: 'block' }} />
                   </IconButton>
                 </Tooltip>
@@ -51,9 +173,57 @@ export default function Content() {
             </Grid>
           </Toolbar>
         </AppBar>
-        <Typography align="center" sx={{ color: 'text.secondary', my: 5, mx: 2 }}>
-          Looks empty! Time to add your first listing.
-        </Typography>
+        <Box sx={{ p: 3 }}>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Product List
+          </Typography>
+          {filteredItems.length === 0 ? (
+            <Typography align="center" sx={{ color: 'text.secondary', my: 5, mx: 2 }}>
+              Looks empty! Time to add your first listing.
+            </Typography>
+          ) : (
+            <Grid container spacing={3}>
+              {filteredItems.map((item) => (
+                <Grid item xs={12} sm={6} md={4} key={item.id}>
+                  <Paper sx={{ p: 2, borderRadius: 2, height: '100%', position: 'relative' }}>
+                    <Box sx={{ mb: 2, width: '100%', aspectRatio: '1/1', overflow: 'hidden', borderRadius: 2, background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <img
+                        src={item.imageUrl || '/media/no-thumbnail.svg'}
+                        alt={item.itemName}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    </Box>
+                    <Typography variant="subtitle1" fontWeight={600}>{item.itemName}</Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>{item.category} | {item.quality}</Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        mb: 1,
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {item.description}
+                    </Typography>
+
+                    <Typography variant="body2">Price: <b>₱{item.price}</b></Typography>
+                    <Typography variant="body2">Quantity: <b>{item.quantity}</b></Typography>
+                    <Box sx={{ position: 'absolute', bottom: 8, right: 8, display: 'flex', gap: 1 }}>
+                      <IconButton size="small" color="primary" onClick={() => handleEdit(item)}>
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton size="small" color="error" onClick={() => handleDelete(item)}>
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  </Paper>
+                </Grid>
+              ))}
+            </Grid>
+          )}
+        </Box>
       </Paper>
     </>
   );

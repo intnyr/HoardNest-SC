@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   InputBase,
@@ -13,7 +13,17 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-const SearchAndMenu: React.FC = () => {
+interface SearchAndMenuProps {
+  selectedCategory: string;
+  onCategorySelect: (category: string) => void;
+}
+
+const SearchAndMenu: React.FC<SearchAndMenuProps> = ({
+  selectedCategory,
+  onCategorySelect,
+}) => {
+  const [search, setSearch] = useState("");
+
   const categories = [
     "Furniture & Home Décor",
     "Kitchen & Dining",
@@ -85,6 +95,13 @@ const SearchAndMenu: React.FC = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
+  const handleSearch = () => {
+    // Dispatch a custom event with the search value
+    window.dispatchEvent(
+      new CustomEvent("hoardnest-search", { detail: search })
+    );
+  };
+
   return (
     <Box sx={{ padding: "0 1rem" }}>
       {/* Search Section */}
@@ -92,26 +109,35 @@ const SearchAndMenu: React.FC = () => {
         sx={{
           display: "flex",
           alignItems: "center",
-          backgroundColor: "rgba(0, 0, 0, 0.05)",
+          backgroundColor: "rgba(66, 36, 36, 0.05)",
           borderRadius: 2,
           px: 1,
           py: 0.5,
           mb: 1,
         }}
       >
-        <IconButton sx={{ color: "inherit", p: 1 }}>
-          <SearchIcon />
-        </IconButton>
         <InputBase
           placeholder="Find your favorite now..."
           type="text"
           aria-label="Search Favorite"
           fullWidth
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleSearch();
+          }}
           sx={{
             ml: 1,
             backgroundColor: "transparent",
           }}
         />
+        <IconButton
+          sx={{ color: "inherit", p: 1 }}
+          onClick={handleSearch}
+          aria-label="search"
+        >
+          <SearchIcon />
+        </IconButton>
       </Box>
 
       {/* Categories Navigation Menu */}
@@ -130,14 +156,17 @@ const SearchAndMenu: React.FC = () => {
               }}
             >
               <Link
-                href={`/categories/${formatCategoryLink(category)}`}
+                href="#"
                 underline="hover"
-                color="#4e542e"
+                color={
+                  selectedCategory === category ? "primary" : "#4e542e"
+                }
                 sx={{
                   minWidth: 100,
                   maxWidth: 250,
                   textDecoration: "none",
-                  backgroundColor: "#e7dbcd",
+                  backgroundColor:
+                    selectedCategory === category ? "#d1e7dd" : "#e7dbcd",
                   height: 50,
                   alignItems: "center",
                   display: "flex",
@@ -147,6 +176,13 @@ const SearchAndMenu: React.FC = () => {
                   borderRight: "2px solid #ccc",
                   padding: "0 16px",
                   pt: 0.75,
+                  cursor: "pointer",
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onCategorySelect(
+                    category === selectedCategory ? "" : category
+                  );
                 }}
               >
                 <Typography

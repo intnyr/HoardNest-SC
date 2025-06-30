@@ -22,7 +22,7 @@ const ProductItem: React.FC<ProductItemProps> = ({
     return null; // Prevents errors if the context is not available
   }
 
-  const { currency } = shopContext;
+  const currency = "Php";
 
   return (
     <Link to={`/categories/${id}`} style={{ textDecoration: "none" }}>

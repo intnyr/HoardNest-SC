@@ -6,30 +6,42 @@ import {
   Breadcrumbs,
   Link,
   Divider,
+  CircularProgress,
 } from "@mui/material";
-import SearchAndCategories from "./SearchAndCategories";
 import { ShopContext } from "../context/ShopContext";
 import CategoryTitle from "./CategoryTitle";
 import ProductItem from "./ProductItem";
 
-const NewListing = () => {
+interface NewListingProps {
+  selectedCategory: string;
+}
+
+const NewListing: React.FC<NewListingProps> = ({ selectedCategory }) => {
   const shopContext = useContext(ShopContext);
 
   if (!shopContext) {
-    console.error("ShopContext is null! Ensure it is wrapped in ShopProvider.");
     return <div>Error: ShopContext is not available.</div>;
   }
 
-  const { products } = shopContext;
+  const { products, loading } = shopContext;
 
-  // Filter new listings
-  const newListings = products.filter((product) => product.newlisting);
-
-  console.log(newListings);
+  // Filter new listings (created in the last 7 days)
+  const now = new Date();
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  let newListings = products.filter(
+    (product) =>
+      product.createdAt &&
+      product.createdAt.toDate &&
+      product.createdAt.toDate() >= sevenDaysAgo
+  );
+  if (selectedCategory) {
+    newListings = newListings.filter(
+      (product) => product.category === selectedCategory
+    );
+  }
 
   return (
     <Box sx={{ p: 2 }}>
-      <SearchAndCategories />
       {/* Breadcrumbs */}
       <Breadcrumbs aria-label="breadcrumb" sx={{ mb: 1 }}>
         <Link underline="hover" color="inherit" href="/">
@@ -39,25 +51,42 @@ const NewListing = () => {
       </Breadcrumbs>
       {/* Header */}
       <CategoryTitle
-        titleText={"New Listing"}
+        titleText={selectedCategory ? selectedCategory : "New Listing"}
         subtitleText={
-          "Men's, women's, and kids' clothing, shoes, bags, jewelry, and watches."
+          selectedCategory
+            ? `Browse new listings in ${selectedCategory}`
+            : "See the latest items added by sellers."
         }
       />
       <Divider sx={{ mb: 2 }} />
-      {/* Products Grid */}
-      <Grid container spacing={2}>
-        {newListings.map((product) => (
-          <Grid item xs={12} sm={6} md={3} key={product.id}>
-            <ProductItem
-              id={product.id}
-              image={product.image}
-              name={product.name}
-              price={product.price}
-            />
-          </Grid>
-        ))}
-      </Grid>
+      {/* Loading Spinner */}
+      {loading ? (
+        <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
+          <CircularProgress />
+        </Box>
+      ) : (
+        <Grid container spacing={2}>
+          {newListings.length === 0 ? (
+            <Grid item xs={12}>
+              <Typography align="center" color="text.secondary">
+                No new listings found
+                {selectedCategory ? ` in ${selectedCategory}` : ""}.
+              </Typography>
+            </Grid>
+          ) : (
+            newListings.map((product) => (
+              <Grid item xs={12} sm={6} md={3} key={product.id}>
+                <ProductItem
+                  id={parseInt(product.id, 10) || 0}
+                  image={product.imageUrl}
+                  name={product.itemName}
+                  price={product.price}
+                />
+              </Grid>
+            ))
+          )}
+        </Grid>
+      )}
     </Box>
   );
 };
