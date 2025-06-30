@@ -41,13 +41,13 @@ const Footer = () => {
 
       {/* Legal Links */}
       <Box display="flex" justifyContent="center" gap={2} mb={2}>
-        <Link href="/policy/" underline="hover">
+        <Link href="/privacy-policy" underline="hover">
           Policy
         </Link>
-        <Link href="/contact/" underline="hover">
+        <Link href="/contact" underline="hover">
           Contact
         </Link>
-        <Link href="/about/" underline="hover">
+        <Link href="/about" underline="hover">
           About Us
         </Link>
       </Box>

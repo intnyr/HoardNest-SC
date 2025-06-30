@@ -12,6 +12,8 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import DashboardPage from "./pages/DashboardPage";
 import PrivateRoute from "./components/PrivateRoute";
 import { useLocation } from "react-router-dom";
+import TermsAndConditions from "./pages/TermsAndConditions";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 const hoardnestTheme = createTheme({
   palette: {
@@ -35,6 +37,8 @@ const App: React.FC = () => {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<SignupPage />} />
+            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route
               path="/dashboard"
               element={
