@@ -20,6 +20,7 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { addDoc, collection, Timestamp } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { db, auth, storage } from "../firebaseConfig";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface UploadSellModalProps {
   open: boolean;
@@ -130,9 +131,23 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
           fontWeight: 600,
           fontSize: 20,
           letterSpacing: 1,
+          pr: 5,
         }}
       >
         Submit Item Details
+        <Button
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            minWidth: 0,
+            p: 1,
+            color: '#555',
+          }}
+        >
+          <CloseIcon />
+        </Button>
       </DialogTitle>
       <DialogContent>
         <Box my={2}>
@@ -271,7 +286,9 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
               onChange={(e) => setItemName(e.target.value)}
               variant="outlined"
               required
+              sx={{ mb: 1 }}
             />
+
             {/* Item category or tags */}
             <FormControl fullWidth>
               <InputLabel id="category-label">Category</InputLabel>
@@ -281,6 +298,7 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
                 label="Category"
                 onChange={(e) => setCategory(e.target.value)}
                 required
+                sx={{ mb: 1 }}
               >
                 {categories.map((cat) => (
                   <MenuItem key={cat} value={cat}>
@@ -289,6 +307,7 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
                 ))}
               </Select>
             </FormControl>
+
             {/* Item quality */}
             <FormControl fullWidth>
               <InputLabel id="quality-label">Item Quality</InputLabel>
@@ -298,6 +317,7 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
                 label="Item Quality"
                 onChange={(e) => setQuality(e.target.value)}
                 required
+                sx={{ mb: 1 }}
               >
                 {qualities.map((q) => (
                   <MenuItem key={q} value={q}>
@@ -317,6 +337,7 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
               onChange={(e) => setDescription(e.target.value)}
               variant="outlined"
               required
+              sx={{ mb: 1 }}
             />
 
             {/* Additional metadata */}
@@ -361,7 +382,7 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
           />
         </Box>
       </DialogContent>
-      <DialogActions>
+      <DialogActions sx={{ mb: 1 }}>
         <Button onClick={onClose} color="secondary" disabled={uploading}>
           Cancel
         </Button>

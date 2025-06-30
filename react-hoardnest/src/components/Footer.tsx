@@ -12,7 +12,7 @@ const Footer = () => {
       sx={{ py: 3, textAlign: "center" }}
     >
       {/* Social Media Links */}
-      <Box display="flex" justifyContent="center" gap={2} mb={2}>
+      <Box display="flex" justifyContent="center" gap={1}>
         <IconButton
           component={Link}
           href="https://www.facebook.com/HoardNest/"
@@ -40,7 +40,7 @@ const Footer = () => {
       </Box>
 
       {/* Legal Links */}
-      <Box display="flex" justifyContent="center" gap={2} mb={2}>
+      <Box display="flex" justifyContent="center" gap={1}>
         <Link href="/privacy-policy" underline="hover">
           Policy
         </Link>
