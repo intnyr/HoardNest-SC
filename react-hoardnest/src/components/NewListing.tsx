@@ -14,9 +14,13 @@ import ProductItem from "./ProductItem";
 
 interface NewListingProps {
   selectedCategory: string;
+  searchValue?: string;
 }
 
-const NewListing: React.FC<NewListingProps> = ({ selectedCategory }) => {
+const NewListing: React.FC<NewListingProps> = ({
+  selectedCategory,
+  searchValue = "",
+}) => {
   const shopContext = useContext(ShopContext);
 
   if (!shopContext) {
@@ -34,9 +38,22 @@ const NewListing: React.FC<NewListingProps> = ({ selectedCategory }) => {
       product.createdAt.toDate &&
       product.createdAt.toDate() >= sevenDaysAgo
   );
+
   if (selectedCategory) {
     newListings = newListings.filter(
       (product) => product.category === selectedCategory
+    );
+  }
+
+  if (searchValue && searchValue.trim() !== "") {
+    const searchLower = searchValue.trim().toLowerCase();
+    newListings = newListings.filter(
+      (product) =>
+        product.itemName.toLowerCase().includes(searchLower) ||
+        (product.description &&
+          product.description.toLowerCase().includes(searchLower)) ||
+        (product.keywords &&
+          product.keywords.toLowerCase().includes(searchLower))
     );
   }
 
@@ -47,7 +64,7 @@ const NewListing: React.FC<NewListingProps> = ({ selectedCategory }) => {
         <Link underline="hover" color="inherit" href="/">
           Home
         </Link>
-        <Typography color="text.primary">New Listing</Typography>
+        <Typography color="text.primary">{selectedCategory}</Typography>
       </Breadcrumbs>
       {/* Header */}
       <CategoryTitle
