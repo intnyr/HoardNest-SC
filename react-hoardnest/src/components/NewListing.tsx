@@ -92,7 +92,7 @@ const NewListing: React.FC<NewListingProps> = ({
             </Grid>
           ) : (
             newListings.map((product) => (
-              <Grid item xs={12} sm={6} md={3} key={product.id}>
+              <Grid item xs={12} sm={4} md={2} key={product.id}>
                 <ProductItem
                   id={parseInt(product.id, 10) || 0}
                   image={product.imageUrl}

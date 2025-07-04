@@ -36,18 +36,27 @@ const ProductItem: React.FC<ProductItemProps> = ({
           cursor: "pointer",
         }}
       >
-        <img
-          src={image}
-          alt={name}
-          style={{
-            minWidth: 255,
-            maxHeight: 255,
-            width: "85%",
-            height: "100%",
-            marginTop: "1rem",
-            borderRadius: "0.5rem",
+        <Box
+          sx={{
+            width: "100%",
+            aspectRatio: "1/1",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "#fff",
           }}
-        />
+        >
+          <img
+            src={image}
+            alt={name}
+            style={{
+              width: "90%",
+              height: "90%",
+              objectFit: "cover",
+              borderRadius: "0.5rem",
+            }}
+          />
+        </Box>
         <Box sx={{ p: 1 }}>
           <Typography
             variant="body1"
