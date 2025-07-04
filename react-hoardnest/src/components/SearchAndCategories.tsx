@@ -96,9 +96,14 @@ const SearchAndMenu: React.FC<SearchAndMenuProps> = ({
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleSearch = () => {
-    // Dispatch a custom event with the search value
+    // Dispatch a custom event with the search value and selected category
     window.dispatchEvent(
-      new CustomEvent("hoardnest-search", { detail: search })
+      new CustomEvent("hoardnest-search", {
+        detail: {
+          search,
+          category: selectedCategory,
+        },
+      })
     );
   };
 
@@ -114,6 +119,7 @@ const SearchAndMenu: React.FC<SearchAndMenuProps> = ({
           px: 1,
           py: 0.5,
           mb: 1,
+          mt: 2,
         }}
       >
         <InputBase
@@ -158,9 +164,7 @@ const SearchAndMenu: React.FC<SearchAndMenuProps> = ({
               <Link
                 href="#"
                 underline="hover"
-                color={
-                  selectedCategory === category ? "primary" : "#4e542e"
-                }
+                color={selectedCategory === category ? "primary" : "#4e542e"}
                 sx={{
                   minWidth: 100,
                   maxWidth: 250,

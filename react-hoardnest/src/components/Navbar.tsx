@@ -5,8 +5,6 @@ import {
   AppBar,
   Toolbar,
   IconButton,
-  Typography,
-  Button,
   Box,
   Drawer,
   List,
@@ -18,7 +16,6 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import { Link } from "react-router-dom";
 import LogoIcon from "../logo-icon.svg";
 import TextLogo from "../text-logo.svg";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
@@ -58,15 +55,16 @@ const Navbar: React.FC = () => {
     navigate("/login");
   };
 
-  const generalLinks: { text: string; href?: string; onClick?: () => void }[] = [
-    ...(user ? [{ text: "Dashboard", href: "/dashboard" }] : []),
-    user
-      ? { text: "Logout", onClick: handleLogout }
-      : { text: "Login", href: "/login" },
-    { text: "New Listing", href: "/" },
-    { text: "About Us", href: "/about" },
-    { text: "Contact", href: "/contact" },
-  ];
+  const generalLinks: { text: string; href?: string; onClick?: () => void }[] =
+    [
+      ...(user ? [{ text: "Dashboard", href: "/dashboard" }] : []),
+      user
+        ? { text: "Logout", onClick: handleLogout }
+        : { text: "Login", href: "/login" },
+      { text: "New Listing", href: "/" },
+      { text: "About Us", href: "/about" },
+      { text: "Contact", href: "/contact" },
+    ];
 
   const categories: string[] = [
     "Furniture & Home Décor",
@@ -134,14 +132,14 @@ const Navbar: React.FC = () => {
             >
               {/* Logo */}
               <Box>
-                <Link to="/">
+                <a href="/">
                   <img
                     src={TextLogo}
                     alt="Hoarnest Logo"
                     height="50"
                     width="120"
                   />
-                </Link>
+                </a>
               </Box>
 
               {/* Close Menu Icon */}
@@ -165,9 +163,9 @@ const Navbar: React.FC = () => {
                   onClick={
                     link.onClick
                       ? () => {
-                        link.onClick && link.onClick();
-                        setDrawerOpen(false);
-                      }
+                          link.onClick && link.onClick();
+                          setDrawerOpen(false);
+                        }
                       : toggleDrawer(false)
                   }
                 >
@@ -197,9 +195,9 @@ const Navbar: React.FC = () => {
 
           {/* Logo Link */}
           <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
-            <Link to="/">
+            <a href="/">
               <img src={LogoIcon} alt="Hoarnest Logo" height="50" width="120" />
-            </Link>
+            </a>
           </Box>
 
           {/* Wishlist Icon */}
