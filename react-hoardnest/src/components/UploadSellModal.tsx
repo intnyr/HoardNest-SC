@@ -69,6 +69,11 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
   const [uploading, setUploading] = useState(false);
   const [quantity, setQuantity] = useState("1");
   const [agreed, setAgreed] = useState(false);
+  // Warranty state
+  const [warrantyOption, setWarrantyOption] = useState(""); // 'warranty' or 'as-is' or ''
+  const [warrantyDuration, setWarrantyDuration] = useState("");
+  const [customWarrantyDuration, setCustomWarrantyDuration] = useState("");
+  const [warrantyExclusions, setWarrantyExclusions] = useState("");
 
   useEffect(() => {
     if (!window.cloudinary) {
@@ -101,8 +106,24 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
   };
 
   const handleUpload = async () => {
-    if (!imageUrl || !itemName || !category || !quality || !description || !price || !agreed) {
+    if (
+      !imageUrl ||
+      !itemName ||
+      !category ||
+      !quality ||
+      !description ||
+      !price ||
+      !agreed
+    ) {
       alert("Please fill in all required fields and agree to the terms.");
+      return;
+    }
+    // Warranty validation: if warranty is selected, duration is required
+    if (
+      warrantyOption === "warranty" &&
+      !(warrantyDuration || customWarrantyDuration)
+    ) {
+      alert("Please specify the warranty duration.");
       return;
     }
     setUploading(true);
@@ -120,6 +141,18 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
         quantity: parseInt(quantity, 10),
         imageUrl,
         createdAt: Timestamp.now(),
+        warranty:
+          warrantyOption === "warranty"
+            ? {
+                duration:
+                  warrantyDuration === "custom"
+                    ? customWarrantyDuration
+                    : warrantyDuration,
+                exclusions: warrantyExclusions,
+              }
+            : warrantyOption === "as-is"
+            ? "as-is"
+            : "",
       });
       setImageUrl("");
       setItemName("");
@@ -130,6 +163,10 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
       setPrice("");
       setQuantity("1");
       setAgreed(false);
+      setWarrantyOption("");
+      setWarrantyDuration("");
+      setCustomWarrantyDuration("");
+      setWarrantyExclusions("");
       onClose();
     } catch (error) {
       console.error("Upload failed:", error);
@@ -143,8 +180,8 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle
         sx={{
-          background: 'linear-gradient(90deg, #f5f5f5 0%, #e0e0e0 100%)',
-          color: '#333',
+          background: "linear-gradient(90deg, #f5f5f5 0%, #e0e0e0 100%)",
+          color: "#333",
           fontWeight: 600,
           fontSize: 20,
           letterSpacing: 1,
@@ -155,12 +192,12 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
         <Button
           onClick={onClose}
           sx={{
-            position: 'absolute',
+            position: "absolute",
             right: 8,
             top: 8,
             minWidth: 0,
             p: 1,
-            color: '#555',
+            color: "#555",
           }}
         >
           <CloseIcon />
@@ -172,10 +209,10 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
             maxWidth={600}
             mx="auto"
             sx={{
-              border: '1px solid #e0e0e0',
+              border: "1px solid #e0e0e0",
               borderRadius: 2,
               p: 1,
-              background: '#fafafa',
+              background: "#fafafa",
               mb: 2,
             }}
           >
@@ -184,15 +221,15 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
               <Grid item xs={8}>
                 <Box
                   sx={{
-                    width: '100%',
-                    position: 'relative',
-                    pb: '100%', // 1:1 aspect ratio
+                    width: "100%",
+                    position: "relative",
+                    pb: "100%", // 1:1 aspect ratio
                     borderRadius: 2,
-                    background: '#f5f5f5',
-                    overflow: 'hidden',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    background: "#f5f5f5",
+                    overflow: "hidden",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
                 >
                   {imageUrl ? (
@@ -200,35 +237,35 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
                       src={imageUrl}
                       alt="Thumbnail"
                       style={{
-                        position: 'absolute',
+                        position: "absolute",
                         top: 0,
                         left: 0,
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
                       }}
                     />
                   ) : (
                     <Box
                       sx={{
-                        width: '60%',
-                        height: '60%',
+                        width: "60%",
+                        height: "60%",
                         opacity: 0.3,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        position: 'absolute',
-                        top: '20%',
-                        left: '20%',
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        position: "absolute",
+                        top: "20%",
+                        left: "20%",
                       }}
                     >
                       <img
                         src={nothumbnail}
                         alt="No Thumbnail"
                         style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'contain',
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "contain",
                         }}
                       />
                     </Box>
@@ -242,7 +279,9 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
                   variant="contained"
                   fullWidth
                   sx={{ py: 1, mb: 2, lineHeight: "normal" }}
-                  onClick={() => openCloudinaryWidget((url) => setImageUrl(url))}
+                  onClick={() =>
+                    openCloudinaryWidget((url) => setImageUrl(url))
+                  }
                 >
                   {imageUrl ? "Change Image" : "Upload Image"}
                 </Button>
@@ -287,11 +326,11 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
             flexDirection="column"
             gap={1}
             sx={{
-              border: '1px solid #e0e0e0',
+              border: "1px solid #e0e0e0",
               borderRadius: 2,
               p: 1,
               mt: 2,
-              background: '#fafafa',
+              background: "#fafafa",
             }}
           >
             {/* Name of an item */}
@@ -356,6 +395,89 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
               sx={{ mb: 1 }}
             />
 
+            {/* Warranty Section */}
+            <Box
+              sx={{
+                mb: 1,
+                p: 1,
+                border: "1px solid #e0e0e0",
+                borderRadius: 2,
+                background: "#f5f5f5",
+              }}
+            >
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
+                Warranty
+              </Typography>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={warrantyOption === "warranty"}
+                    onChange={() =>
+                      setWarrantyOption(
+                        warrantyOption === "warranty" ? "" : "warranty"
+                      )
+                    }
+                    color="primary"
+                  />
+                }
+                label="This item includes a warranty"
+              />
+              {warrantyOption === "warranty" && (
+                <Box sx={{ ml: 3, mb: 1 }}>
+                  <FormControl fullWidth sx={{ mb: 1 }}>
+                    <InputLabel id="warranty-duration-label">
+                      Warranty Duration
+                    </InputLabel>
+                    <Select
+                      labelId="warranty-duration-label"
+                      value={warrantyDuration}
+                      label="Warranty Duration"
+                      onChange={(e) => setWarrantyDuration(e.target.value)}
+                    >
+                      <MenuItem value="1 day">1 day</MenuItem>
+                      <MenuItem value="3 days">3 days</MenuItem>
+                      <MenuItem value="1 week">1 week</MenuItem>
+                      <MenuItem value="1 month">1 month</MenuItem>
+                      <MenuItem value="custom">Custom</MenuItem>
+                    </Select>
+                  </FormControl>
+                  {warrantyDuration === "custom" && (
+                    <TextField
+                      label="Custom Duration"
+                      fullWidth
+                      value={customWarrantyDuration}
+                      onChange={(e) =>
+                        setCustomWarrantyDuration(e.target.value)
+                      }
+                      variant="outlined"
+                      sx={{ mb: 1 }}
+                    />
+                  )}
+                  <TextField
+                    label="Exclusions (e.g. accidental damage, misuse, normal wear and tear)"
+                    fullWidth
+                    value={warrantyExclusions}
+                    onChange={(e) => setWarrantyExclusions(e.target.value)}
+                    variant="outlined"
+                  />
+                </Box>
+              )}
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={warrantyOption === "as-is"}
+                    onChange={() =>
+                      setWarrantyOption(
+                        warrantyOption === "as-is" ? "" : "as-is"
+                      )
+                    }
+                    color="primary"
+                  />
+                }
+                label="This item is sold as-is with no warranty"
+              />
+            </Box>
+
             {/* Additional metadata */}
             <TextField
               label="Keywords (comma separated)"
@@ -371,11 +493,11 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
           flexDirection="column"
           gap={1}
           sx={{
-            border: '1px solid #e0e0e0',
+            border: "1px solid #e0e0e0",
             borderRadius: 2,
             p: 1,
             mt: 2,
-            background: '#fafafa',
+            background: "#fafafa",
           }}
         >
           <FormControlLabel
@@ -389,7 +511,11 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
             label={
               <Typography variant="body2">
                 I agree to the{" "}
-                <Link href="/terms-and-conditions" target="_blank" rel="noopener">
+                <Link
+                  href="/terms-and-conditions"
+                  target="_blank"
+                  rel="noopener"
+                >
                   Terms and Conditions
                 </Link>
                 .
