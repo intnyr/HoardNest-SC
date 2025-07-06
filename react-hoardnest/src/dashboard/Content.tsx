@@ -66,6 +66,7 @@ interface Item {
   quantity: number;
   createdAt: any;
   warranty?: string | { duration?: string; exclusions?: string };
+  availability?: string;
 }
 
 export default function Content() {
@@ -155,6 +156,8 @@ export default function Content() {
       quantity: updated.quantity,
       imageUrl: updated.imageUrl,
       warranty: updated.warranty !== undefined ? updated.warranty : "",
+      availability:
+        updated.availability !== undefined ? updated.availability : "In stock",
     });
     setEditOpen(false);
     setEditItem(null);
@@ -305,6 +308,9 @@ export default function Content() {
                     </Typography>
                     <Typography variant="body2">
                       Quantity: <b>{item.quantity}</b>
+                    </Typography>
+                    <Typography variant="body2">
+                      Availability: <b>{item.availability || "In stock"}</b>
                     </Typography>
                     {/* Warranty display */}
                     {item.warranty && item.warranty !== "" && (

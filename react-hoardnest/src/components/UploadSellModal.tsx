@@ -74,6 +74,7 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
   const [warrantyDuration, setWarrantyDuration] = useState("");
   const [customWarrantyDuration, setCustomWarrantyDuration] = useState("");
   const [warrantyExclusions, setWarrantyExclusions] = useState("");
+  const [availability, setAvailability] = useState("In stock");
 
   useEffect(() => {
     if (!window.cloudinary) {
@@ -141,6 +142,7 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
         quantity: parseInt(quantity, 10),
         imageUrl,
         createdAt: Timestamp.now(),
+        availability,
         warranty:
           warrantyOption === "warranty"
             ? {
@@ -167,6 +169,7 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
       setWarrantyDuration("");
       setCustomWarrantyDuration("");
       setWarrantyExclusions("");
+      setAvailability("In stock");
       onClose();
     } catch (error) {
       console.error("Upload failed:", error);
@@ -478,6 +481,20 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
               />
             </Box>
 
+            {/* Availability dropdown */}
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <InputLabel id="availability-label">Availability</InputLabel>
+              <Select
+                labelId="availability-label"
+                value={availability}
+                label="Availability"
+                onChange={(e) => setAvailability(e.target.value)}
+                required
+              >
+                <MenuItem value="In stock">In stock</MenuItem>
+                <MenuItem value="Out of stock">Out of stock</MenuItem>
+              </Select>
+            </FormControl>
             {/* Additional metadata */}
             <TextField
               label="Keywords (comma separated)"
