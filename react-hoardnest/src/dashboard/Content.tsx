@@ -24,8 +24,10 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db } from "../firebaseConfig";
+
 import EditItemModal from "../components/EditItemModal";
 import DeleteConfirmModal from "../components/DeleteConfirmModal";
+import RevenueBreakdown from "../components/RevenueBreakdown";
 
 // Warranty display helper (matches EditItemModal logic)
 function renderWarranty(warranty: Item["warranty"]) {
@@ -303,9 +305,10 @@ export default function Content() {
                       {item.description}
                     </Typography>
 
-                    <Typography variant="body2">
-                      Price: <b>₱{item.price}</b>
-                    </Typography>
+                    {/* Revenue breakdown for this item */}
+                    <Box sx={{ mt: 1 }}>
+                      <RevenueBreakdown orderValue={item.price} />
+                    </Box>
                     <Typography variant="body2">
                       Quantity: <b>{item.quantity}</b>
                     </Typography>

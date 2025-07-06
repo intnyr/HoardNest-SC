@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import RevenueBreakdown from "./RevenueBreakdown";
 import {
   Dialog,
   DialogTitle,
@@ -431,6 +432,12 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
             required
             inputProps={{ min: 0, step: "0.01" }}
           />
+          {/* Revenue breakdown preview for entered price */}
+          {price && !isNaN(Number(price)) && Number(price) > 0 && (
+            <Box sx={{ mt: 2 }}>
+              <RevenueBreakdown orderValue={Number(price)} />
+            </Box>
+          )}
           <TextField
             label="Quantity"
             type="number"
