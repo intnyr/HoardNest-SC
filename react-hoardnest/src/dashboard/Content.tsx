@@ -1,5 +1,7 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebaseConfig";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -58,6 +60,7 @@ function renderWarranty(warranty: Item["warranty"]) {
 
 interface Item {
   id: string;
+  userId: string; // Add this line to match Firestore structure
   imageUrl: string;
   itemName: string;
   category: string;
@@ -79,18 +82,33 @@ export default function Content() {
   const [editItem, setEditItem] = useState<Item | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteItem, setDeleteItem] = useState<Item | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
+  // Listen for auth state and set userId
   useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUserId(user ? user.uid : null);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Fetch only items for the current user
+  useEffect(() => {
+    if (!userId) {
+      setItems([]);
+      setFilteredItems([]);
+      return;
+    }
     const q = query(collection(db, "items"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const allItems = snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() } as Item)
-      );
+      const allItems = snapshot.docs
+        .map((doc) => ({ id: doc.id, ...doc.data() } as Item))
+        .filter((item) => item.userId === userId);
       setItems(allItems);
       setFilteredItems(allItems);
     });
     return () => unsubscribe();
-  }, []);
+  }, [userId]);
 
   const handleSearch = () => {
     if (!search.trim()) {
