@@ -41,7 +41,8 @@ const NewListing: React.FC<NewListingProps> = ({
       product.createdAt.toDate &&
       product.createdAt.toDate() >= sevenDaysAgo &&
       (product.availability === undefined ||
-        product.availability === "In stock")
+        product.availability === "In stock") &&
+      product.userId // Only show items with a valid userId (uploaded by a real seller)
   );
 
   if (selectedCategory) {

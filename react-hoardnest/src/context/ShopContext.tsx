@@ -1,5 +1,12 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
-import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  query,
+  orderBy,
+  getDocs,
+  DocumentData,
+} from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
 export interface Product {
@@ -15,6 +22,7 @@ export interface Product {
   quantity: number;
   createdAt: any;
   userId?: string;
+  sellerName?: string;
   availability?: string;
 }
 
@@ -65,19 +73,70 @@ const ShopContextProvider: React.FC<ShopContextProviderProps> = ({
   };
 
   useEffect(() => {
-    const q = query(collection(db, "items"), orderBy("createdAt", "desc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const allItems = snapshot.docs.map((doc) => {
-        // Prefer the id field from Firestore data, fallback to doc.id
-        const data = doc.data();
-        // Remove id from data to avoid duplicate/conflicting id fields
-        const { id, ...rest } = data;
-        return { id: id || doc.id, ...rest } as Product;
+    // Fetch all users and map uid to displayName
+    let userMap: Record<string, string> = {};
+    const fetchUsersAndItems = async () => {
+      try {
+        // Try to get all users from a 'users' collection (if exists)
+        const usersSnap = await getDocs(collection(db, "users"));
+        usersSnap.forEach((doc) => {
+          const data = doc.data() as DocumentData;
+          if (data) {
+            if (data.displayName) {
+              userMap[doc.id] = data.displayName;
+            } else if (data.email) {
+              userMap[doc.id] = data.email;
+            } else {
+              userMap[doc.id] = "Unknown";
+            }
+          }
+        });
+      } catch (e) {
+        // If no users collection, fallback to empty map
+        userMap = {};
+      }
+      const q = query(collection(db, "items"), orderBy("createdAt", "desc"));
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const allItems = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          const { id, userId, ...rest } = data;
+          // If sellerName is missing in Firestore, update it if possible
+          let sellerName: string | undefined = undefined;
+          if (userId && userMap[userId]) {
+            sellerName = userMap[userId];
+            // Optionally update Firestore if missing
+            if (!data.sellerName || data.sellerName !== sellerName) {
+              try {
+                // Only update if doc exists and sellerName is different
+                import("firebase/firestore").then(
+                  ({ doc: docRef, updateDoc }) => {
+                    updateDoc(docRef(db, "items", doc.id), { sellerName });
+                  }
+                );
+              } catch (e) {
+                // Ignore update errors
+              }
+            }
+          }
+          return {
+            id: id || doc.id,
+            userId,
+            sellerName,
+            ...rest,
+          } as Product;
+        });
+        setProducts(allItems);
+        setLoading(false);
       });
-      setProducts(allItems);
-      setLoading(false);
+      return unsubscribe;
+    };
+    let unsubscribe: (() => void) | undefined;
+    fetchUsersAndItems().then((unsub) => {
+      unsubscribe = unsub;
     });
-    return () => unsubscribe();
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   return (

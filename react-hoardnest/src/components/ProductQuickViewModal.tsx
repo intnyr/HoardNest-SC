@@ -125,7 +125,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
               })()}
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
-              Seller: <b>{fullName || "Unknown"}</b>
+              Seller: <b>{item.sellerName || "Unknown"}</b>
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
               {item.category} | {item.quality}
