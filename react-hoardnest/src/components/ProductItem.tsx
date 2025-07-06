@@ -5,7 +5,7 @@ import { Box, Grid, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 
 interface ProductItemProps {
-  id: number;
+  id: string;
   image: string;
   name: string;
   price: number;

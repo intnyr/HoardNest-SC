@@ -37,25 +37,43 @@ const ShopContextProvider: React.FC<ShopContextProviderProps> = ({
 }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [nest, setNest] = useState<any[]>([]);
+  // Persist nest in localStorage
+  const [nest, setNest] = useState<any[]>(() => {
+    try {
+      const stored = localStorage.getItem("hoardnest_nest");
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
 
   const addToNest = (item: any) => {
     setNest((prev) => {
-      if (prev.find((i) => i.id === item.id)) return prev;
-      return [...prev, item];
+      if (prev.find((i) => String(i.id) === String(item.id))) return prev;
+      const updated = [...prev, item];
+      localStorage.setItem("hoardnest_nest", JSON.stringify(updated));
+      return updated;
     });
   };
 
   const removeFromNest = (id: string | number) => {
-    setNest((prev) => prev.filter((item) => item.id !== id));
+    setNest((prev) => {
+      const updated = prev.filter((item) => String(item.id) !== String(id));
+      localStorage.setItem("hoardnest_nest", JSON.stringify(updated));
+      return updated;
+    });
   };
 
   useEffect(() => {
     const q = query(collection(db, "items"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const allItems = snapshot.docs.map(
-        (doc) => ({ id: doc.id, ...doc.data() } as Product)
-      );
+      const allItems = snapshot.docs.map((doc) => {
+        // Prefer the id field from Firestore data, fallback to doc.id
+        const data = doc.data();
+        // Remove id from data to avoid duplicate/conflicting id fields
+        const { id, ...rest } = data;
+        return { id: id || doc.id, ...rest } as Product;
+      });
       setProducts(allItems);
       setLoading(false);
     });

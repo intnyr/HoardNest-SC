@@ -105,7 +105,7 @@ const NewListing: React.FC<NewListingProps> = ({
               <Grid item xs={12} sm={4} md={2} key={product.id}>
                 <Box sx={{ cursor: "pointer" }}>
                   <ProductItem
-                    id={parseInt(product.id, 10) || 0}
+                    id={product.id}
                     image={product.imageUrl}
                     name={product.itemName}
                     price={product.price}
@@ -125,24 +125,28 @@ const NewListing: React.FC<NewListingProps> = ({
         open={quickViewOpen}
         onClose={() => setQuickViewOpen(false)}
         product={
-          selectedProduct && {
-            id: parseInt(selectedProduct.id, 10) || 0,
-            image: selectedProduct.imageUrl,
-            name: selectedProduct.itemName,
-            price: selectedProduct.price,
-            category: selectedProduct.category,
-            quality: selectedProduct.quality,
-            description: selectedProduct.description,
-            warranty: selectedProduct.warranty,
-            availability: selectedProduct.availability,
-            quantity: selectedProduct.quantity,
-            keywords: selectedProduct.keywords,
-            sellerName:
-              selectedProduct.sellerName ||
-              selectedProduct.seller ||
-              selectedProduct.userName ||
-              "Unknown",
-          }
+          selectedProduct
+            ? {
+                item: {
+                  id: selectedProduct.id,
+                  image: selectedProduct.imageUrl,
+                  name: selectedProduct.itemName,
+                  price: selectedProduct.price,
+                  category: selectedProduct.category,
+                  quality: selectedProduct.quality,
+                  description: selectedProduct.description,
+                  warranty: selectedProduct.warranty,
+                  availability: selectedProduct.availability,
+                  quantity: selectedProduct.quantity,
+                  keywords: selectedProduct.keywords,
+                  sellerName:
+                    selectedProduct.sellerName ||
+                    selectedProduct.seller ||
+                    selectedProduct.userName ||
+                    "Unknown",
+                },
+              }
+            : null
         }
       />
     </Box>

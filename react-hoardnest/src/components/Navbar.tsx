@@ -101,7 +101,6 @@ const Navbar: React.FC = () => {
 
   // State for quick view modal
   const [quickViewProduct, setQuickViewProduct] = useState<any>(null);
-
   return (
     <ThemeProvider theme={hoardnestTheme}>
       <AppBar position="sticky">
@@ -130,6 +129,7 @@ const Navbar: React.FC = () => {
               }}
             >
               {/* Logo */}
+              {/* ...existing code... */}
               <Box>
                 <a href="/">
                   <img

@@ -86,7 +86,29 @@ const NestDrawer = ({ open, onClose, nestItems }: any) => {
                 edge="end"
                 aria-label={`View ${item.name} details`}
                 sx={{ mr: 1 }}
-                onClick={() => item.onView && item.onView(item)}
+                onClick={() =>
+                  item.onView &&
+                  item.onView({
+                    item: {
+                      id: item.id,
+                      image: item.image,
+                      name: item.name,
+                      price: item.price,
+                      category: item.category,
+                      quality: item.quality,
+                      description: item.description,
+                      warranty: item.warranty,
+                      availability: item.availability,
+                      quantity: item.quantity,
+                      keywords: item.keywords,
+                      sellerName:
+                        item.sellerName ||
+                        item.seller ||
+                        item.userName ||
+                        "Unknown",
+                    },
+                  })
+                }
               >
                 <ShoppingBagIcon />
               </IconButton>

@@ -18,18 +18,20 @@ interface ProductQuickViewModalProps {
   open: boolean;
   onClose: () => void;
   product: {
-    id: number;
-    image: string;
-    name: string;
-    price: number;
-    category?: string;
-    quality?: string;
-    description?: string;
-    warranty?: string | { duration?: string; exclusions?: string };
-    availability?: string;
-    quantity?: number;
-    keywords?: string;
-    sellerName?: string;
+    item: {
+      id: string;
+      image: string;
+      name: string;
+      price: number;
+      category?: string;
+      quality?: string;
+      description?: string;
+      warranty?: string | { duration?: string; exclusions?: string };
+      availability?: string;
+      quantity?: number;
+      keywords?: string;
+      sellerName?: string;
+    };
   } | null;
 }
 
@@ -67,17 +69,20 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
 }) => {
   const { fullName } = useCurrentUser();
   const shopContext = useContext(ShopContext);
-  if (!product || !shopContext) return null;
+  // Defensive: check product and product.item
+  if (!product || !product.item || !shopContext) return null;
   const { nest, addToNest } = shopContext;
-  const isInNest = nest.some((item) => item.id === product.id);
+  const { item } = product;
+  // Use only item.id for isInNest (string type)
+  const isInNest = nest.some((n) => n.id === item.id);
   const handleAddToNest = () => {
     if (!isInNest) {
-      addToNest(product);
+      addToNest(item);
     }
   };
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>{product.name}</DialogTitle>
+      <DialogTitle>{item.name}</DialogTitle>
       <DialogContent>
         <Grid container spacing={2}>
           <Grid item xs={12} md={5}>
@@ -94,44 +99,44 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
               }}
             >
               <img
-                src={product.image || "/media/no-thumbnail.svg"}
-                alt={product.name}
+                src={item.image || "/media/no-thumbnail.svg"}
+                alt={item.name}
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             </Box>
           </Grid>
           <Grid item xs={12} md={7}>
             <Typography variant="h6" sx={{ mb: 1 }}>
-              ₱{product.price}
+              ₱{item.price}
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
               Seller: <b>{fullName || "Unknown"}</b>
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              {product.category} | {product.quality}
+              {item.category} | {item.quality}
             </Typography>
             <Typography variant="body2" sx={{ mb: 2 }}>
-              {product.description}
+              {item.description}
             </Typography>
             {/* Availability removed as requested */}
             <Typography variant="body2" sx={{ mb: 1 }}>
-              Quantity: <b>{product.quantity}</b>
+              Quantity: <b>{item.quantity}</b>
             </Typography>
-            {product.warranty && product.warranty !== "" && (
+            {item.warranty && item.warranty !== "" && (
               <Box sx={{ mb: 1 }}>
                 <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                  Warranty: {renderWarranty(product.warranty)}
+                  Warranty: {renderWarranty(item.warranty)}
                 </Typography>
               </Box>
             )}
 
-            {product.keywords && (
+            {item.keywords && (
               <Typography
                 variant="caption"
                 color="text.secondary"
                 sx={{ mt: 2, display: "block" }}
               >
-                Keywords: {product.keywords}
+                Keywords: {item.keywords}
               </Typography>
             )}
           </Grid>
