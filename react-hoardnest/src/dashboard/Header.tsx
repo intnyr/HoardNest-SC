@@ -1,20 +1,20 @@
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Grid from '@mui/material/Grid';
-import HelpIcon from '@mui/icons-material/Help';
-import IconButton from '@mui/material/IconButton';
-import Link from '@mui/material/Link';
-import MenuIcon from '@mui/icons-material/Menu';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
-import Toolbar from '@mui/material/Toolbar';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
+import * as React from "react";
+import AppBar from "@mui/material/AppBar";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import HelpIcon from "@mui/icons-material/Help";
+import IconButton from "@mui/material/IconButton";
+import Link from "@mui/material/Link";
+import MenuIcon from "@mui/icons-material/Menu";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import Tab from "@mui/material/Tab";
+import Tabs from "@mui/material/Tabs";
+import Toolbar from "@mui/material/Toolbar";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
 
-const lightColor = 'rgba(255, 255, 255, 0.7)';
+const lightColor = "rgba(255, 255, 255, 0.7)";
 
 interface HeaderProps {
   onDrawerToggle: () => void;
@@ -27,8 +27,8 @@ export default function Header(props: HeaderProps) {
     <React.Fragment>
       <AppBar color="primary" position="sticky" elevation={0}>
         <Toolbar>
-          <Grid container spacing={1} sx={{ alignItems: 'center' }}>
-            <Grid sx={{ display: { sm: 'none', xs: 'block' } }} item>
+          <Grid container spacing={1} sx={{ alignItems: "center" }}>
+            <Grid sx={{ display: { sm: "none", xs: "block" } }} item>
               <IconButton
                 color="inherit"
                 aria-label="open drawer"
@@ -79,7 +79,7 @@ export default function Header(props: HeaderProps) {
         sx={{ zIndex: 0 }}
       >
         <Toolbar>
-          <Grid container spacing={1} sx={{ alignItems: 'center' }}>
+          <Grid container spacing={1} sx={{ alignItems: "center" }}>
             <Grid item xs>
               <Typography color="inherit" variant="h5" component="h1">
                 Stored Goods
@@ -105,12 +105,17 @@ export default function Header(props: HeaderProps) {
           </Grid>
         </Toolbar>
       </AppBar>
-      <AppBar component="div" position="static" elevation={0} sx={{ zIndex: 0 }}>
+      <AppBar
+        component="div"
+        position="static"
+        elevation={0}
+        sx={{ zIndex: 0 }}
+      >
         <Tabs value={0} textColor="inherit">
           <Tab label="Product List" />
           <Tab label="In-Review" />
           <Tab label="Delivery" />
-          <Tab label="Unlisted" />
+          <Tab label="Sold Items" />
         </Tabs>
       </AppBar>
     </React.Fragment>
