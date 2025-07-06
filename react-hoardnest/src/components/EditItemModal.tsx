@@ -79,6 +79,9 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
   const [quantity, setQuantity] = useState(item?.quantity?.toString() || "1");
   const [imageUrl, setImageUrl] = useState(item?.imageUrl || "");
   const [prevImageUrl, setPrevImageUrl] = useState(item?.imageUrl || "");
+  const [availability, setAvailability] = useState(
+    item?.availability || "In stock"
+  );
   // Warranty state
   const [warrantyOption, setWarrantyOption] = useState(
     item?.warranty && item?.warranty !== "as-is" && item?.warranty !== ""
@@ -120,6 +123,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
     setQuantity(item?.quantity?.toString() || "1");
     setImageUrl(item?.imageUrl || "");
     setPrevImageUrl(item?.imageUrl || "");
+    setAvailability(item?.availability || "In stock");
     // Warranty
     setWarrantyOption(
       item?.warranty && item?.warranty !== "as-is" && item?.warranty !== ""
@@ -215,6 +219,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
       price: parseFloat(price),
       quantity: parseInt(quantity, 10),
       imageUrl,
+      availability,
       warranty:
         warrantyOption === "warranty"
           ? {
@@ -396,6 +401,19 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
               label="This item is sold as-is with no warranty"
             />
           </Box>
+          <FormControl fullWidth sx={{ mb: 2 }}>
+            <InputLabel id="availability-label">Availability</InputLabel>
+            <Select
+              labelId="availability-label"
+              value={availability}
+              label="Availability"
+              onChange={(e) => setAvailability(e.target.value)}
+              required
+            >
+              <MenuItem value="In stock">In stock</MenuItem>
+              <MenuItem value="Out of stock">Out of stock</MenuItem>
+            </Select>
+          </FormControl>
           <TextField
             label="Keywords (comma separated)"
             fullWidth
