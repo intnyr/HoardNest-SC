@@ -4,24 +4,28 @@ interface RevenueBreakdownProps {
   orderValue: number;
 }
 
-// Constants for commission and shipping logic
+// Constants for commission and service fee logic
 const STORE_COMMISSION_RATE = 0.2; // 20%
 const SERVICE_FEE = 85; // ₱85 for orders ≤ ₱624
 const SERVICE_FEE_THRESHOLD = 625; // Orders ≥ ₱625 get commission only
 
-function calculateRevenue(orderValue: number) {
+function calculateRevenue(price: number) {
   let serviceFee = 0;
   let commission = 0;
-  let sellerReceives = orderValue;
+  let orderValue = price;
+  let sellerReceives = price;
 
-  if (orderValue < SERVICE_FEE_THRESHOLD) {
+  if (price < SERVICE_FEE_THRESHOLD) {
+    // For orders ≤ ₱624, add ₱85 service fee to the order value
     serviceFee = SERVICE_FEE;
     commission = 0;
-    sellerReceives = orderValue - serviceFee;
+    orderValue = price + serviceFee;
+    sellerReceives = price;
   } else {
     serviceFee = 0;
-    commission = orderValue * STORE_COMMISSION_RATE;
-    sellerReceives = orderValue - commission;
+    commission = price * STORE_COMMISSION_RATE;
+    orderValue = price;
+    sellerReceives = price - commission;
   }
 
   return {
@@ -33,18 +37,23 @@ function calculateRevenue(orderValue: number) {
 }
 
 const RevenueBreakdown: React.FC<RevenueBreakdownProps> = ({ orderValue }) => {
-  const { serviceFee, commission, sellerReceives } =
-    calculateRevenue(orderValue);
+  // Here, orderValue is the price set by the seller
+  const {
+    orderValue: finalOrderValue,
+    serviceFee,
+    commission,
+    sellerReceives,
+  } = calculateRevenue(orderValue);
 
   return (
     <div className="revenue-breakdown">
       <h4>Revenue Breakdown</h4>
       <ul>
-        <li>Order Value: ₱{orderValue.toFixed(2)}</li>
+        <li>Order Value: ₱{finalOrderValue.toFixed(2)}</li>
         {serviceFee > 0 && (
           <li>
             Service Fee: ₱{serviceFee.toFixed(2)}{" "}
-            <span>(Applied for orders ≤ ₱624)</span>
+            <span>(Added to order value for orders ≤ ₱624)</span>
           </li>
         )}
         {commission > 0 && (

@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { calculateRevenue } from "./RevenueBreakdown";
 import { useCurrentUser } from "../hooks/useCurrentUser";
 import { ShopContext } from "../context/ShopContext";
 import {
@@ -107,7 +108,21 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
           </Grid>
           <Grid item xs={12} md={7}>
             <Typography variant="h6" sx={{ mb: 1 }}>
-              ₱{item.price}
+              {(() => {
+                const { orderValue, serviceFee } = calculateRevenue(item.price);
+                return (
+                  <>
+                    ₱{orderValue.toFixed(2)}
+                    {serviceFee > 0 && (
+                      <span
+                        style={{ fontSize: 12, color: "#888", marginLeft: 4 }}
+                      >
+                        (incl. ₱85 fee)
+                      </span>
+                    )}
+                  </>
+                );
+              })()}
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
               Seller: <b>{fullName || "Unknown"}</b>

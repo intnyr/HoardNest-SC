@@ -92,6 +92,9 @@ const ProductItem: React.FC<ProductItemProps> = ({
           gutterBottom
         >
           {currency} {price}
+          <span style={{ fontSize: 12, color: "#888", marginLeft: 4 }}>
+            {price < 625 ? " (incl. ₱85 fee)" : ""}
+          </span>
         </Typography>
       </Box>
     </Box>

@@ -108,7 +108,9 @@ const NewListing: React.FC<NewListingProps> = ({
                     id={product.id}
                     image={product.imageUrl}
                     name={product.itemName}
-                    price={product.price}
+                    price={
+                      product.price < 625 ? product.price + 85 : product.price
+                    }
                     onClick={(e: React.MouseEvent) => {
                       e.preventDefault();
                       e.stopPropagation();
