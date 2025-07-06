@@ -11,6 +11,7 @@ import {
 import { ShopContext } from "../context/ShopContext";
 import CategoryTitle from "./CategoryTitle";
 import ProductItem from "./ProductItem";
+import ProductQuickViewModal from "./ProductQuickViewModal";
 
 interface NewListingProps {
   selectedCategory: string;
@@ -22,6 +23,8 @@ const NewListing: React.FC<NewListingProps> = ({
   searchValue = "",
 }) => {
   const shopContext = useContext(ShopContext);
+  const [quickViewOpen, setQuickViewOpen] = React.useState(false);
+  const [selectedProduct, setSelectedProduct] = React.useState<any>(null);
 
   if (!shopContext) {
     return <div>Error: ShopContext is not available.</div>;
@@ -36,7 +39,9 @@ const NewListing: React.FC<NewListingProps> = ({
     (product) =>
       product.createdAt &&
       product.createdAt.toDate &&
-      product.createdAt.toDate() >= sevenDaysAgo
+      product.createdAt.toDate() >= sevenDaysAgo &&
+      (product.availability === undefined ||
+        product.availability === "In stock")
   );
 
   if (selectedCategory) {
@@ -56,6 +61,11 @@ const NewListing: React.FC<NewListingProps> = ({
           product.keywords.toLowerCase().includes(searchLower))
     );
   }
+
+  const handleProductClick = (product: any) => {
+    setSelectedProduct(product);
+    setQuickViewOpen(true);
+  };
 
   return (
     <Box sx={{ p: 2 }}>
@@ -93,17 +103,48 @@ const NewListing: React.FC<NewListingProps> = ({
           ) : (
             newListings.map((product) => (
               <Grid item xs={12} sm={4} md={2} key={product.id}>
-                <ProductItem
-                  id={parseInt(product.id, 10) || 0}
-                  image={product.imageUrl}
-                  name={product.itemName}
-                  price={product.price}
-                />
+                <Box sx={{ cursor: "pointer" }}>
+                  <ProductItem
+                    id={parseInt(product.id, 10) || 0}
+                    image={product.imageUrl}
+                    name={product.itemName}
+                    price={product.price}
+                    onClick={(e: React.MouseEvent) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleProductClick(product);
+                    }}
+                  />
+                </Box>
               </Grid>
             ))
           )}
         </Grid>
       )}
+      <ProductQuickViewModal
+        open={quickViewOpen}
+        onClose={() => setQuickViewOpen(false)}
+        product={
+          selectedProduct && {
+            id: parseInt(selectedProduct.id, 10) || 0,
+            image: selectedProduct.imageUrl,
+            name: selectedProduct.itemName,
+            price: selectedProduct.price,
+            category: selectedProduct.category,
+            quality: selectedProduct.quality,
+            description: selectedProduct.description,
+            warranty: selectedProduct.warranty,
+            availability: selectedProduct.availability,
+            quantity: selectedProduct.quantity,
+            keywords: selectedProduct.keywords,
+            sellerName:
+              selectedProduct.sellerName ||
+              selectedProduct.seller ||
+              selectedProduct.userName ||
+              "Unknown",
+          }
+        }
+      />
     </Box>
   );
 };

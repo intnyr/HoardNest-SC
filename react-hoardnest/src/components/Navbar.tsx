@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import ProductQuickViewModal from "./ProductQuickViewModal";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import {
@@ -14,13 +15,13 @@ import {
   Divider,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import FavoriteIcon from "@mui/icons-material/Favorite";
+import NestIcon from "./NestIcon";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import LogoIcon from "../logo-icon.svg";
 import TextLogo from "../text-logo.svg";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import WishlistDrawer from "./WishlistDrawer";
-import productImage1 from "../media/product-01.png";
+import NestDrawer from "./NestDrawer";
+import { ShopContext } from "../context/ShopContext";
 import { useNavigate } from "react-router-dom";
 
 const hoardnestTheme = createTheme({
@@ -34,7 +35,7 @@ const hoardnestTheme = createTheme({
 
 const Navbar: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [isWishlistOpen, setWishlistOpen] = useState(false);
+  const [isNestOpen, setNestOpen] = useState(false);
 
   const toggleDrawer = (open: boolean) => () => {
     setDrawerOpen(open);
@@ -93,15 +94,13 @@ const Navbar: React.FC = () => {
       .replace(/&/g, "and"); // Replace "&" with "and"
   };
 
-  const wishlistItems = [
-    {
-      id: 1,
-      name: "Sports-casual mens moccasins without ties with print and inscription in white and black",
-      image: productImage1,
-      onRemove: (id: number) => alert(`Remove item with ID: ${id}`),
-    },
-    // Add more items as needed
-  ];
+  // Get nest items from context
+  const shopContext = React.useContext(ShopContext);
+  const nestItems = shopContext?.nest || [];
+  const removeFromNest = shopContext?.removeFromNest;
+
+  // State for quick view modal
+  const [quickViewProduct, setQuickViewProduct] = useState<any>(null);
 
   return (
     <ThemeProvider theme={hoardnestTheme}>
@@ -200,25 +199,41 @@ const Navbar: React.FC = () => {
             </a>
           </Box>
 
-          {/* Wishlist Icon */}
+          {/* Nest Icon */}
           {user && (
             <IconButton
               color="inherit"
-              aria-label="open wishlist"
+              aria-label="open nest"
               sx={{
                 color: "#9f4a23",
               }}
-              onClick={() => setWishlistOpen(true)}
+              onClick={() => setNestOpen(true)}
             >
-              <FavoriteIcon />
+              <NestIcon width={24} height={24} />
             </IconButton>
           )}
           {user && (
-            <WishlistDrawer
-              open={isWishlistOpen}
-              onClose={() => setWishlistOpen(false)}
-              wishlistItems={wishlistItems}
-            />
+            <>
+              <NestDrawer
+                open={isNestOpen}
+                onClose={() => setNestOpen(false)}
+                nestItems={nestItems.map((item: any) => ({
+                  ...item,
+                  onRemove: removeFromNest ? removeFromNest : () => {},
+                  onView: (product: any) => {
+                    setNestOpen(false);
+                    setQuickViewProduct(product);
+                  },
+                }))}
+              />
+              {quickViewProduct && (
+                <ProductQuickViewModal
+                  open={!!quickViewProduct}
+                  onClose={() => setQuickViewProduct(null)}
+                  product={quickViewProduct}
+                />
+              )}
+            </>
           )}
         </Toolbar>
       </AppBar>

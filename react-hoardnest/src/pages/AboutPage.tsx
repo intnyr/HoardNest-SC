@@ -16,13 +16,13 @@ const AboutPage: React.FC = () => {
       <Box my={3}>
         <Typography variant="body1" paragraph>
           HoardNest is your go-to platform for discovering and organizing your
-          favorite products. We strive to provide an intuitive and seamless
+          nest products. We strive to provide an intuitive and seamless
           experience, making it easier for you to browse, compare, and save
           items that matter most to you.
         </Typography>
         <Typography variant="body1" paragraph>
           Our mission is to create a space where users can efficiently manage
-          their collections, wishlist, and purchases, all in one place. Whether
+          their collections, nest, and purchases, all in one place. Whether
           you’re a casual shopper or a dedicated collector, HoardNest is built
           to cater to your needs.
         </Typography>
@@ -34,9 +34,8 @@ const AboutPage: React.FC = () => {
           Our Vision
         </Typography>
         <Typography variant="body1" paragraph>
-          To revolutionize the way people organize and interact with their
-          favorite products, making discovery and collection effortless and
-          enjoyable.
+          To revolutionize the way people organize and interact with their nest
+          products, making discovery and collection effortless and enjoyable.
         </Typography>
       </Box>
 
@@ -46,8 +45,7 @@ const AboutPage: React.FC = () => {
         </Typography>
         <Typography variant="body1" paragraph>
           To provide a seamless platform that empowers users to explore, save,
-          and manage their favorite items in a well-structured and accessible
-          way.
+          and manage their nest items in a well-structured and accessible way.
         </Typography>
       </Box>
     </Container>

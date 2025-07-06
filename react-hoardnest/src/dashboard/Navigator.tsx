@@ -13,7 +13,7 @@ import PaidIcon from "@mui/icons-material/Paid";
 import LockIcon from "@mui/icons-material/Lock";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
-import FavoriteIcon from "@mui/icons-material/Favorite";
+import NestIcon from "../components/NestIcon";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { Link } from "react-router-dom";
@@ -42,7 +42,10 @@ const categories = [
     id: "Account",
     children: [
       { id: "Settings", icon: <SettingsIcon /> },
-      { id: "Favorites", icon: <FavoriteIcon /> },
+      {
+        id: "Nest",
+        icon: <NestIcon width={24} height={24} />,
+      },
       { id: "Order History", icon: <ReceiptLongIcon /> },
       { id: "Password & Security", icon: <LockIcon /> },
       { id: "Shipping Address", icon: <LocalShippingIcon /> },
