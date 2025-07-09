@@ -123,9 +123,9 @@ const SearchAndMenu: React.FC<SearchAndMenuProps> = ({
         }}
       >
         <InputBase
-          placeholder="Find your favorite now..."
+          placeholder="Find your nest item now..."
           type="text"
-          aria-label="Search Favorite"
+          aria-label="Search Nest"
           fullWidth
           value={search}
           onChange={(e) => setSearch(e.target.value)}

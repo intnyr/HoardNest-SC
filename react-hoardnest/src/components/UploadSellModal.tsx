@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import React, { useState, useEffect } from "react";
 import RevenueBreakdown from "./RevenueBreakdown";
 import {
@@ -132,7 +133,9 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
     try {
       const user = auth.currentUser;
       if (!user) throw new Error("User not authenticated");
+      const itemId = uuidv4();
       await addDoc(collection(db, "items"), {
+        id: itemId, // Unique and consistent product/item id
         userId: user.uid,
         itemName,
         category,
