@@ -11,6 +11,7 @@ import {
 import { ShopContext } from "../context/ShopContext";
 import CategoryTitle from "./CategoryTitle";
 import ProductItem from "./ProductItem";
+import { Chip } from "@mui/material";
 import ProductQuickViewModal from "./ProductQuickViewModal";
 
 interface NewListingProps {
@@ -32,14 +33,11 @@ const NewListing: React.FC<NewListingProps> = ({
 
   const { products, loading } = shopContext;
 
-  // Filter new listings (created in the last 7 days)
+  // Filter: show all products in their category, regardless of age
   const now = new Date();
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   let newListings = products.filter(
     (product) =>
-      product.createdAt &&
-      product.createdAt.toDate &&
-      product.createdAt.toDate() >= sevenDaysAgo &&
       (product.availability === undefined ||
         product.availability === "In stock") &&
       product.userId // Only show items with a valid userId (uploaded by a real seller)
@@ -102,25 +100,49 @@ const NewListing: React.FC<NewListingProps> = ({
               </Typography>
             </Grid>
           ) : (
-            newListings.map((product) => (
-              <Grid item xs={12} sm={4} md={2} key={product.id}>
-                <Box sx={{ cursor: "pointer" }}>
-                  <ProductItem
-                    id={product.id}
-                    image={product.imageUrl}
-                    name={product.itemName}
-                    price={
-                      product.price < 625 ? product.price + 85 : product.price
-                    }
-                    onClick={(e: React.MouseEvent) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleProductClick(product);
-                    }}
-                  />
-                </Box>
-              </Grid>
-            ))
+            newListings.map((product) => {
+              // Determine if product is new (created within last 7 days)
+              let isNew = false;
+              if (
+                product.createdAt &&
+                typeof product.createdAt.toDate === "function"
+              ) {
+                isNew = product.createdAt.toDate() >= sevenDaysAgo;
+              }
+              return (
+                <Grid item xs={12} sm={4} md={2} key={product.id}>
+                  <Box sx={{ cursor: "pointer", position: "relative" }}>
+                    {isNew && (
+                      <Chip
+                        label="New"
+                        color="success"
+                        size="small"
+                        sx={{
+                          position: "absolute",
+                          top: 8,
+                          left: 8,
+                          zIndex: 2,
+                        }}
+                      />
+                    )}
+                    <ProductItem
+                      id={product.id}
+                      image={product.imageUrl}
+                      name={product.itemName}
+                      price={
+                        product.price < 625 ? product.price + 85 : product.price
+                      }
+                      sellerName={product.sellerName || "Unknown"}
+                      onClick={(e: React.MouseEvent) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleProductClick(product);
+                      }}
+                    />
+                  </Box>
+                </Grid>
+              );
+            })
           )}
         </Grid>
       )}

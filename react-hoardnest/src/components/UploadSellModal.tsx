@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
 import React, { useState, useEffect } from "react";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 import RevenueBreakdown from "./RevenueBreakdown";
 import {
   Dialog,
@@ -61,6 +62,7 @@ const qualities = [
 ];
 
 const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
+  const { user, fullName } = useCurrentUser();
   const [imageUrl, setImageUrl] = useState("");
   const [itemName, setItemName] = useState("");
   const [category, setCategory] = useState("");
@@ -131,12 +133,14 @@ const UploadSellModal: React.FC<UploadSellModalProps> = ({ open, onClose }) => {
     }
     setUploading(true);
     try {
-      const user = auth.currentUser;
-      if (!user) throw new Error("User not authenticated");
+      const currentUser = user || auth.currentUser;
+      if (!currentUser) throw new Error("User not authenticated");
       const itemId = uuidv4();
       await addDoc(collection(db, "items"), {
         id: itemId, // Unique and consistent product/item id
-        userId: user.uid,
+        userId: currentUser.uid,
+        sellerName:
+          fullName || currentUser.displayName || currentUser.email || "Unknown",
         itemName,
         category,
         quality,

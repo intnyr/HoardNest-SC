@@ -83,6 +83,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
   const [availability, setAvailability] = useState(
     item?.availability || "In stock"
   );
+  const [sellerName, setSellerName] = useState(item?.sellerName || "");
   // Warranty state
   const [warrantyOption, setWarrantyOption] = useState(
     item?.warranty && item?.warranty !== "as-is" && item?.warranty !== ""
@@ -125,6 +126,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
     setImageUrl(item?.imageUrl || "");
     setPrevImageUrl(item?.imageUrl || "");
     setAvailability(item?.availability || "In stock");
+    setSellerName(item?.sellerName || "");
     // Warranty
     setWarrantyOption(
       item?.warranty && item?.warranty !== "as-is" && item?.warranty !== ""
@@ -221,6 +223,7 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
       quantity: parseInt(quantity, 10),
       imageUrl,
       availability,
+      sellerName: sellerName || "Unknown",
       warranty:
         warrantyOption === "warranty"
           ? {
@@ -280,6 +283,15 @@ const EditItemModal: React.FC<EditItemModalProps> = ({
             onChange={(e) => setItemName(e.target.value)}
             variant="outlined"
             required
+          />
+          <TextField
+            label="Seller Name"
+            fullWidth
+            value={sellerName}
+            onChange={(e) => setSellerName(e.target.value)}
+            variant="outlined"
+            required
+            sx={{ mb: 1 }}
           />
           <FormControl fullWidth>
             <InputLabel id="category-label">Category</InputLabel>

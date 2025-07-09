@@ -9,6 +9,7 @@ interface ProductItemProps {
   image: string;
   name: string;
   price: number;
+  sellerName?: string;
   onClick?: (e: React.MouseEvent) => void;
 }
 
@@ -17,6 +18,7 @@ const ProductItem: React.FC<ProductItemProps> = ({
   image,
   name,
   price,
+  sellerName,
   onClick,
 }) => {
   const shopContext = useContext(ShopContext);
@@ -83,6 +85,15 @@ const ProductItem: React.FC<ProductItemProps> = ({
         >
           {name}
         </Typography>
+        {sellerName && (
+          <Typography
+            variant="caption"
+            sx={{ color: "#888", mb: 0.5 }}
+            title={sellerName}
+          >
+            Seller: {sellerName}
+          </Typography>
+        )}
         <Typography
           variant="h6"
           sx={{

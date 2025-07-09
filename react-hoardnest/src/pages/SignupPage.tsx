@@ -9,7 +9,8 @@ import {
   Grid,
 } from "@mui/material";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth } from "../firebaseConfig";
+import { auth, db } from "../firebaseConfig";
+import { setDoc, doc } from "firebase/firestore";
 import CircularProgress from "@mui/material/CircularProgress";
 
 const SignupPage: React.FC = () => {
@@ -31,9 +32,19 @@ const SignupPage: React.FC = () => {
     }
     setLoading(true);
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       if (auth.currentUser) {
         await updateProfile(auth.currentUser, { displayName: fullName });
+        // Store additional user info in Firestore
+        await setDoc(doc(db, "users", auth.currentUser.uid), {
+          displayName: fullName,
+          email: auth.currentUser.email,
+          createdAt: new Date(),
+        });
       }
       setSuccess(true);
       setTimeout(() => {
@@ -41,7 +52,9 @@ const SignupPage: React.FC = () => {
       }, 2000); // Redirect after 2 seconds
     } catch (err: any) {
       if (err.code === "auth/email-already-in-use") {
-        setError("This email is already registered. Please use a different email or log in.");
+        setError(
+          "This email is already registered. Please use a different email or log in."
+        );
       } else {
         setError("An error occurred. Please try again.");
       }

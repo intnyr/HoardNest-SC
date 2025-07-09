@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { calculateRevenue } from "./RevenueBreakdown";
 import { useCurrentUser } from "../hooks/useCurrentUser";
 import { ShopContext } from "../context/ShopContext";
@@ -32,6 +32,7 @@ interface ProductQuickViewModalProps {
       quantity?: number;
       keywords?: string;
       sellerName?: string;
+      userId?: string;
     };
   } | null;
 }
@@ -70,17 +71,65 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
 }) => {
   const { fullName } = useCurrentUser();
   const shopContext = useContext(ShopContext);
+  const [sellerName, setSellerName] = useState<string>("");
   // Defensive: check product and product.item
+  const { nest, addToNest } = shopContext || { nest: [], addToNest: () => {} };
+  const item = product && product.item;
+
+  useEffect(() => {
+    if (!item || !item.userId) {
+      setSellerName(item && item.sellerName ? item.sellerName : "Unknown");
+      return;
+    }
+    const currentItem = item;
+    async function fetchSellerName() {
+      if (!currentItem) {
+        setSellerName("Unknown");
+        return;
+      }
+      try {
+        const { doc, getDoc } = await import("firebase/firestore");
+        // Use db from shopContext if available, fallback to firebaseConfig
+        const db =
+          shopContext && shopContext.db
+            ? shopContext.db
+            : (await import("../firebaseConfig")).db;
+        if (!currentItem.userId) throw new Error("No userId");
+        const userDoc = await getDoc(
+          doc(db, "users", String(currentItem.userId))
+        );
+        if (userDoc.exists()) {
+          const data = userDoc.data();
+          setSellerName(
+            data.displayName || data.fullName || data.email || "Unknown"
+          );
+          return;
+        }
+      } catch (e) {}
+      setSellerName(
+        currentItem && currentItem.sellerName
+          ? currentItem.sellerName
+          : "Unknown"
+      );
+    }
+    fetchSellerName();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [item && item.userId, item && item.sellerName, shopContext]);
+
   if (!product || !product.item || !shopContext) return null;
-  const { nest, addToNest } = shopContext;
-  const { item } = product;
+
   // Use only item.id for isInNest (string type)
-  const isInNest = nest.some((n) => n.id === item.id);
+  const isInNest = item ? nest.some((n) => n.id === item.id) : false;
   const handleAddToNest = () => {
-    if (!isInNest) {
+    if (item && !isInNest) {
       addToNest(item);
+      onClose();
     }
   };
+
+  // Defensive: render nothing if item is null
+  if (!item) return null;
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>{item.name}</DialogTitle>
@@ -125,7 +174,7 @@ const ProductQuickViewModal: React.FC<ProductQuickViewModalProps> = ({
               })()}
             </Typography>
             <Typography variant="body2" sx={{ mb: 1 }}>
-              Seller: <b>{item.sellerName || "Unknown"}</b>
+              Seller: <b>{sellerName || "Unknown"}</b>
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
               {item.category} | {item.quality}
