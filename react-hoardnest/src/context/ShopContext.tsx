@@ -8,6 +8,7 @@ import {
   DocumentData,
 } from "firebase/firestore";
 import { db } from "../firebaseConfig";
+import { Firestore } from "firebase/firestore";
 
 export interface Product {
   id: string;
@@ -32,6 +33,7 @@ interface ShopContextProps {
   nest: any[];
   addToNest: (item: any) => void;
   removeFromNest: (id: string | number) => void;
+  db: Firestore;
 }
 
 export const ShopContext = createContext<ShopContextProps | null>(null);
@@ -141,7 +143,7 @@ const ShopContextProvider: React.FC<ShopContextProviderProps> = ({
 
   return (
     <ShopContext.Provider
-      value={{ products, loading, nest, addToNest, removeFromNest }}
+      value={{ products, loading, nest, addToNest, removeFromNest, db }}
     >
       {children}
     </ShopContext.Provider>

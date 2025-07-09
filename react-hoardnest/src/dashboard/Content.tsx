@@ -60,7 +60,7 @@ function renderWarranty(warranty: Item["warranty"]) {
 
 interface Item {
   id: string;
-  userId: string; // Add this line to match Firestore structure
+  userId: string;
   imageUrl: string;
   itemName: string;
   category: string;
@@ -72,6 +72,7 @@ interface Item {
   createdAt: any;
   warranty?: string | { duration?: string; exclusions?: string };
   availability?: string;
+  sellerName?: string;
 }
 
 export default function Content() {
@@ -178,6 +179,7 @@ export default function Content() {
       warranty: updated.warranty !== undefined ? updated.warranty : "",
       availability:
         updated.availability !== undefined ? updated.availability : "In stock",
+      sellerName: updated.sellerName || "Unknown",
     });
     setEditOpen(false);
     setEditItem(null);
